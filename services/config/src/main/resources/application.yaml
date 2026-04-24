@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config
+  profiles:
+    active: native
+  security:
+    user:
+      name: config-admin
+      password: config-secure-password
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - classpath:/configurations/common
+            - classpath:/configurations/dev
+            - classpath:/configurations/prod
