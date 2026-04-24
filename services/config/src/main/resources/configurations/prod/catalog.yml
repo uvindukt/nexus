@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    username: postgres
+    password: admin
+    url: jdbc:postgresql://localhost:5432/catalog
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate:
+        jdbc:
+          fetch_size: 50
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-admin:discovery-secure-password@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30

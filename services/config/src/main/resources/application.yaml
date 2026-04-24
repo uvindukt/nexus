@@ -4,12 +4,12 @@ server:
 spring:
   application:
     name: config
-  profiles:
-    active: native
   security:
     user:
       name: config-admin
       password: config-secure-password
+  profiles:
+    active: native
   cloud:
     config:
       server:

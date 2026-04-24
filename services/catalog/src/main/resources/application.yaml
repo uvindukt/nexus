@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: catalog
+  config:
+    import: optional:configserver:http://config-admin:config-secure-password@localhost:8888
