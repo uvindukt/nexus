@@ -4,9 +4,6 @@ spring:
     password: admin
     url: jdbc:postgresql://localhost:5432/catalog
     driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 10
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,6 +15,24 @@ spring:
           fetch_size: 50
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
+  cloud:
+    function:
+      definition: productEventSupplier
+    stream:
+      bindings:
+        productEventSupplier-out-0:
+          destination: catalog.product.events
+          producer:
+            partition-count: 2
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: true
+        bindings:
+          productEventSupplier-out-0:
+            producer:
+              configuration:
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
 eureka:
   client:
     register-with-eureka: true

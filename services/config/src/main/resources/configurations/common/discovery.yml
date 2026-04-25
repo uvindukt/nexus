@@ -1,6 +1,9 @@
 server:
   port: 8761
 spring:
+  threads:
+    virtual:
+      enabled: true
   security:
     user:
       name: discovery-admin

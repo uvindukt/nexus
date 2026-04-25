@@ -5,7 +5,7 @@ import com.nexus.catalog.domain.exception.ProductErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
@@ -59,12 +59,12 @@ public class Product {
     @Version
     private Integer version;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @CreationTimestamp
     @LastModifiedDate
-    @Column(nullable = false)
     private Instant updatedAt;
 
     /**

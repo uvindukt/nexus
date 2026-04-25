@@ -2,7 +2,7 @@ package com.nexus.catalog.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class Brand {
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private Set<Product> products;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdDate;
 

@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: config
+  threads:
+    virtual:
+      enabled: true
   security:
     user:
       name: config-admin
