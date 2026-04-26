@@ -67,35 +67,4 @@ public class Product {
     @LastModifiedDate
     private Instant updatedAt;
 
-    /**
-     * Sets the product status to active.
-     *
-     * @throws InvalidProductStateException if the product is already deleted.
-     */
-    public void activate() {
-
-        if (this.status == ProductStatus.DELETED) {
-            throw new InvalidProductStateException(ProductErrorCode.ACTIVATION_OF_DELETED_PRODUCT);
-        }
-        this.status = ProductStatus.ACTIVE;
-
-    }
-
-    /**
-     * Adds custom attributes to a {@link Product} if needed
-     *
-     * @param key   Custom attribute key (eg: color)
-     * @param value Custom attribute value (eg: black)
-     */
-    public void addAttribute(String key, String value) {
-
-        ProductAttribute attribute = ProductAttribute.builder()
-                .key(key)
-                .value(value)
-                .product(this)
-                .build();
-        this.attributes.add(attribute);
-
-    }
-
 }

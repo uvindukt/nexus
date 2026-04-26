@@ -19,6 +19,10 @@ public interface CategoryMapper {
 
     Category toModel(CategoryRequest request);
 
+    // Updates the existing category object in its current place
+    @Mapping(target = "id", ignore = true)
+    void updateModel(CategoryRequest request, @MappingTarget Category exsitingCategory);
+
     @Mapping(target = "parent", qualifiedByName = TO_BRIEF_RESPONSE)
     CategoryResponse toResponse(Category category);
 

@@ -8,7 +8,7 @@ public class InvalidProductStateException extends RuntimeException {
     private final ProductErrorCode errorCode;
 
     public InvalidProductStateException(ProductErrorCode errorCode) {
-        super(errorCode.name());
+        super("exception.invalid.product-state");
         this.errorCode = errorCode;
     }
 }

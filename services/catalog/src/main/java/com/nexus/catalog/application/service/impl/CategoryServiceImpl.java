@@ -6,6 +6,7 @@ import com.nexus.catalog.application.mapper.web.CategoryMapper;
 import com.nexus.catalog.application.service.CategoryService;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
+import com.nexus.catalog.domain.exception.InvalidHierarchyException;
 import com.nexus.catalog.domain.model.Category;
 import com.nexus.catalog.infrastructure.persistence.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
+    public static final String NAME = "Name";
+    public static final String SLUG = "Slug";
+
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
 
@@ -27,15 +31,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse createCategory(CategoryRequest categoryRequest) {
 
-        if (categoryRepository.existsByName(categoryRequest.name())) {
-            throw new DuplicateEntryException(Category.class.getSimpleName(), "Name", categoryRequest.name());
+        validateUniqueness(categoryRequest);
+        var category = categoryMapper.toModel(categoryRequest);
+
+        if (categoryRequest.parentId() != null) {
+            var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+            category.setParent(parentCategory);
         }
 
-        if (categoryRepository.existsBySlug(categoryRequest.slug())) {
-            throw new DuplicateEntryException(Category.class.getSimpleName(), "Slug", categoryRequest.slug());
-        }
-
-        return categoryMapper.toResponse(categoryRepository.save(categoryMapper.toModel(categoryRequest)));
+        return categoryMapper.toResponse(categoryRepository.save(category));
 
     }
 
@@ -43,9 +47,24 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse updateCategory(CategoryRequest categoryRequest) {
 
-        categoryRepository.findById(categoryRequest.id()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findById(categoryRequest.id())
+                .map(category -> {
 
-        return categoryMapper.toResponse(categoryRepository.save(categoryMapper.toModel(categoryRequest)));
+                    validateUniqueness(categoryRequest);
+                    categoryMapper.updateModel(categoryRequest, category);
+
+                    if (categoryRequest.parentId() != null) {
+                        validateHierarchy(category, categoryRequest.parentId());
+                        var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+                        category.setParent(parentCategory);
+                    } else {
+                        category.setParent(null);
+                    }
+
+                    return categoryMapper.toResponse(category);
+
+                })
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -53,10 +72,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse deleteCategory(Long categoryId) {
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
-        category.setActive(false);
-
-        return categoryMapper.toResponse(categoryRepository.save(category));
+        return categoryRepository.findById(categoryId)
+                .map(category -> {
+                    category.setActive(false);
+                    return categoryMapper.toResponse(category);
+                })
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -64,8 +85,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategory(Long categoryId) {
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
-        return categoryMapper.toResponse(category);
+        return categoryRepository.findById(categoryId)
+                .map(categoryMapper::toResponse)
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -73,8 +95,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategory(String categoryName) {
 
-        Category category = categoryRepository.findByName(categoryName).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
-        return categoryMapper.toResponse(category);
+        return categoryRepository.findByName(categoryName)
+                .map(categoryMapper::toResponse)
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -83,6 +106,71 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryResponse> getCategories() {
 
         return categoryMapper.toResponses(categoryRepository.findAll());
+
+    }
+
+    /**
+     * Checks if the Category Name or Slug from the request object already exists in the DB
+     * Throws {@link DuplicateEntryException}
+     *
+     * @param categoryRequest {@link CategoryRequest} Object with category data
+     */
+    private void validateUniqueness(CategoryRequest categoryRequest) {
+
+        var conflict = categoryRepository.findByNameOrSlug(categoryRequest.name(), categoryRequest.slug());
+
+        conflict.forEach(category -> {
+
+            // If the Category ID from request is null (Create) or the Category from DB is not the same one in request (Update)
+            if (categoryRequest.id() == null || !category.getId().equals(categoryRequest.id())) {
+                boolean nameMatch = category.getName().equalsIgnoreCase(categoryRequest.name());
+                String field = nameMatch ? NAME : SLUG;
+                String value = nameMatch ? categoryRequest.name() : categoryRequest.slug();
+
+                throw new DuplicateEntryException(Category.class.getSimpleName(), field, value);
+            }
+
+        });
+
+    }
+
+    /**
+     * Validates {@link Category} parent child relations
+     *
+     * @param category Category Object
+     * @param parentId Parent Category ID
+     */
+    private void validateHierarchy(Category category, Long parentId) {
+
+        // 1. Basic check: I can't be my own parent
+        if (category.getId().equals(parentId)) {
+            throw new InvalidHierarchyException(Category.class.getSimpleName());
+        }
+
+        // 2. Recursive check: Is parentId one of my subcategories?
+        if (isDescendant(category, parentId)) {
+            throw new InvalidHierarchyException(Category.class.getSimpleName());
+        }
+
+    }
+
+    /**
+     * Recursive method to check if a provided Parent ID exists as an ID of a child {@link Category}
+     *
+     * @param rootCategory   Root {@link Category} object
+     * @param targetParentId Parent ID
+     * @return {@link boolean}
+     */
+    private boolean isDescendant(Category rootCategory, Long targetParentId) {
+
+        if (rootCategory.getSubCategories() == null) return false;
+
+        for (Category sub : rootCategory.getSubCategories()) {
+            if (sub.getId().equals(targetParentId)) return true;
+            if (isDescendant(sub, targetParentId)) return true;
+        }
+
+        return false;
 
     }
 

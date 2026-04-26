@@ -8,7 +8,7 @@ public class EntryNotFoundException extends RuntimeException {
     private final Object[] args;
 
     public EntryNotFoundException(Object... args) {
-        super("exception.category.not-found");
+        super("exception.entry.not-found");
         this.args = args;
     }
 
