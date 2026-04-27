@@ -12,6 +12,6 @@ public interface ProductEventMapper {
     @Mapping(target = "brandId", source = "brand.id")
     @Mapping(target = "categoryId", source = "category.id")
     @Mapping(target = "occurredAt", expression = "java(java.time.Instant.now())")
-    ProductCreatedEventV1 toCreatedEventV1(Product product);
+    ProductCreatedEventV1 toCreatedEvent(Product product);
 
 }

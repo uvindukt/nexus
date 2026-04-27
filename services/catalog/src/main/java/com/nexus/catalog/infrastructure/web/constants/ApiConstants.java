@@ -13,4 +13,14 @@ public final class ApiConstants {
         public static final String TAG = "Category Management";
     }
 
+    public static final class Brands {
+        public static final String BASE = V1 + "/brands";
+        public static final String TAG = "Brand Management";
+    }
+
+    public static final class ProductAttributes {
+        public static final String BASE = V1 + "/product-attributes";
+        public static final String TAG = "Product Attribute Management";
+    }
+
 }

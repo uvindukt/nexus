@@ -13,15 +13,16 @@ public interface CategoryService {
      * @param categoryRequest {@link CategoryRequest} object containing category data
      * @return {@link CategoryResponse} object containing created category data
      */
-    CategoryResponse createCategory(CategoryRequest categoryRequest);
+    CategoryResponse create(CategoryRequest categoryRequest);
 
     /**
      * Updates a {@link com.nexus.catalog.domain.model.Category} object with provided data and persist in database
      *
+     * @param categoryId      Category ID
      * @param categoryRequest {@link CategoryRequest} object containing category data
      * @return {@link CategoryResponse} object containing updated category data
      */
-    CategoryResponse updateCategory(CategoryRequest categoryRequest);
+    CategoryResponse update(Long categoryId, CategoryRequest categoryRequest);
 
     /**
      * Deactivates a {@link com.nexus.catalog.domain.model.Category} with provided ID
@@ -29,7 +30,7 @@ public interface CategoryService {
      * @param categoryId Category ID
      * @return {@link CategoryResponse} object containing category data
      */
-    CategoryResponse deleteCategory(Long categoryId);
+    CategoryResponse delete(Long categoryId);
 
     /**
      * Retrieves a {@link com.nexus.catalog.domain.model.Category} with provided ID
@@ -37,7 +38,7 @@ public interface CategoryService {
      * @param categoryId Category ID
      * @return {@link CategoryResponse} object containing category data
      */
-    CategoryResponse getCategory(Long categoryId);
+    CategoryResponse get(Long categoryId);
 
     /**
      * Retrieves a {@link com.nexus.catalog.domain.model.Category} with provided Name
@@ -45,13 +46,13 @@ public interface CategoryService {
      * @param categoryName Category Name
      * @return {@link CategoryResponse} object containing category data
      */
-    CategoryResponse getCategory(String categoryName);
+    CategoryResponse get(String categoryName);
 
     /**
      * Retrieves all {@link com.nexus.catalog.domain.model.Category} objects
      *
      * @return {@link List<CategoryResponse>} object containing all categories
      */
-    List<CategoryResponse> getCategories();
+    List<CategoryResponse> getAll();
 
 }

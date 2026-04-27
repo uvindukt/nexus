@@ -1,7 +1,5 @@
 package com.nexus.catalog.domain.model;
 
-import com.nexus.catalog.domain.exception.InvalidProductStateException;
-import com.nexus.catalog.domain.exception.ProductErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
@@ -27,7 +25,7 @@ public class Product {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String code;
+    private String sku;
 
     @Column(nullable = false)
     private String name;
@@ -44,7 +42,7 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private ProductStatus status;
+    private ProductStatus status = ProductStatus.DRAFT;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Brand brand;
@@ -55,9 +53,6 @@ public class Product {
     @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<ProductAttribute> attributes = new HashSet<>();
-
-    @Version
-    private Integer version;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

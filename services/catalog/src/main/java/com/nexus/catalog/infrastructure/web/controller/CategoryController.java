@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ApiConstants.Categories.BASE)
-@Tag(name = "Category Management")
+@Tag(name = ApiConstants.Categories.TAG)
 @RequiredArgsConstructor
 public class CategoryController {
 
@@ -30,34 +30,34 @@ public class CategoryController {
     @JsonView(OutboundView.Detail.class)
     @Operation(summary = "openapi.category.create.sum", description = "openapi.category.create.desc")
     public ResponseEntity<CategoryResponse> create(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody CategoryRequest categoryRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.create(categoryRequest));
     }
 
     @GetMapping
     @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.category.findAll.sum", description = "openapi.category.findAll.desc")
     public ResponseEntity<List<CategoryResponse>> findAll() {
-        return ResponseEntity.ok(categoryService.getCategories());
+        return ResponseEntity.ok(categoryService.getAll());
     }
 
     @GetMapping(ApiConstants.ID)
     @JsonView(OutboundView.Detail.class)
     @Operation(summary = "openapi.category.findById.sum", description = "openapi.category.findById.desc")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategory(id));
+        return ResponseEntity.ok(categoryService.get(id));
     }
 
     @PutMapping(ApiConstants.ID)
     @JsonView(OutboundView.Detail.class)
     @Operation(summary = "openapi.category.update.sum", description = "openapi.category.update.desc")
     public ResponseEntity<CategoryResponse> update(@PathVariable Long id, @JsonView(InboundView.Update.class) @Validated(Validate.Update.class) @RequestBody CategoryRequest categoryRequest) {
-        return ResponseEntity.ok(categoryService.updateCategory(categoryRequest));
+        return ResponseEntity.ok(categoryService.update(id, categoryRequest));
     }
 
     @DeleteMapping(ApiConstants.ID)
     @Operation(summary = "openapi.category.delete.sum", description = "openapi.category.delete.desc")
     public ResponseEntity<CategoryResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.deleteCategory(id));
+        return ResponseEntity.ok(categoryService.delete(id));
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
-        nullValueIterableMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface CategoryMapper {
 

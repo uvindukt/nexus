@@ -11,6 +11,7 @@ import com.nexus.catalog.domain.model.Category;
 import com.nexus.catalog.infrastructure.persistence.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryResponse createCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse create(CategoryRequest categoryRequest) {
 
         validateUniqueness(categoryRequest);
         var category = categoryMapper.toModel(categoryRequest);
@@ -45,65 +46,57 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public CategoryResponse updateCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse update(Long categoryId, CategoryRequest categoryRequest) {
 
-        return categoryRepository.findById(categoryRequest.id())
-                .map(category -> {
+        return categoryRepository.findById(categoryId).map(category -> {
 
-                    validateUniqueness(categoryRequest);
-                    categoryMapper.updateModel(categoryRequest, category);
+            validateUniqueness(categoryRequest);
+            categoryMapper.updateModel(categoryRequest, category);
 
-                    if (categoryRequest.parentId() != null) {
-                        validateHierarchy(category, categoryRequest.parentId());
-                        var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
-                        category.setParent(parentCategory);
-                    } else {
-                        category.setParent(null);
-                    }
+            if (categoryRequest.parentId() != null) {
+                validateHierarchy(category, categoryRequest.parentId());
+                var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+                category.setParent(parentCategory);
+            } else {
+                category.setParent(null);
+            }
 
-                    return categoryMapper.toResponse(category);
+            return categoryMapper.toResponse(category);
 
-                })
-                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        }).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
     @Transactional
     @Override
-    public CategoryResponse deleteCategory(Long categoryId) {
+    public CategoryResponse delete(Long categoryId) {
 
-        return categoryRepository.findById(categoryId)
-                .map(category -> {
-                    category.setActive(false);
-                    return categoryMapper.toResponse(category);
-                })
-                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findById(categoryId).map(category -> {
+            category.setActive(false);
+            return categoryMapper.toResponse(category);
+        }).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CategoryResponse getCategory(Long categoryId) {
+    public CategoryResponse get(Long categoryId) {
 
-        return categoryRepository.findById(categoryId)
-                .map(categoryMapper::toResponse)
-                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findById(categoryId).map(categoryMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CategoryResponse getCategory(String categoryName) {
+    public CategoryResponse get(String categoryName) {
 
-        return categoryRepository.findByName(categoryName)
-                .map(categoryMapper::toResponse)
-                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findByName(categoryName).map(categoryMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<CategoryResponse> getCategories() {
+    public List<CategoryResponse> getAll() {
 
         return categoryMapper.toResponses(categoryRepository.findAll());
 
@@ -115,6 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param categoryRequest {@link CategoryRequest} Object with category data
      */
+    @NullMarked
     private void validateUniqueness(CategoryRequest categoryRequest) {
 
         var conflict = categoryRepository.findByNameOrSlug(categoryRequest.name(), categoryRequest.slug());
@@ -140,6 +134,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param category Category Object
      * @param parentId Parent Category ID
      */
+    @NullMarked
     private void validateHierarchy(Category category, Long parentId) {
 
         // 1. Basic check: I can't be my own parent
@@ -161,13 +156,12 @@ public class CategoryServiceImpl implements CategoryService {
      * @param targetParentId Parent ID
      * @return {@link boolean}
      */
+    @NullMarked
     private boolean isDescendant(Category rootCategory, Long targetParentId) {
 
-        if (rootCategory.getSubCategories() == null) return false;
-
-        for (Category sub : rootCategory.getSubCategories()) {
-            if (sub.getId().equals(targetParentId)) return true;
-            if (isDescendant(sub, targetParentId)) return true;
+        for (Category subCategory : rootCategory.getSubCategories()) {
+            if (subCategory.getId().equals(targetParentId)) return true;
+            if (isDescendant(subCategory, targetParentId)) return true;
         }
 
         return false;

@@ -2,7 +2,9 @@ package com.nexus.catalog.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Getter
 @Setter
 @Entity
@@ -21,7 +23,7 @@ public class ProductAttribute {
     @Column(nullable = false)
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Product product;
 
 }

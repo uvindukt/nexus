@@ -12,8 +12,10 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    @EntityGraph(attributePaths = {"parent", "subCategories"})
     List<Category> findByNameOrSlug(String name, String slug);
 
+    @EntityGraph(attributePaths = {"parent", "subCategories"})
     Optional<Category> findByName(String name);
 
     @Override

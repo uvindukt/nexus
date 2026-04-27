@@ -3,10 +3,13 @@ package com.nexus.catalog.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Set;
 
+@NullMarked
 @Getter
 @Setter
 @Entity
@@ -22,10 +25,15 @@ public class Brand {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Nullable
     @Column(unique = true)
     private String website;
 
+    @Nullable
     private String logoUrl;
+
+    @Builder.Default
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private Set<Product> products;

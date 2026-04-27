@@ -2,10 +2,13 @@ package com.nexus.catalog.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@NullMarked
 @Getter
 @Setter
 @Entity
@@ -24,6 +27,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private Category parent;
 
@@ -35,6 +39,6 @@ public class Category {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private Set<Product> products = new HashSet<>();
 
-    private boolean isActive;
+    private Boolean active = true;
 
 }

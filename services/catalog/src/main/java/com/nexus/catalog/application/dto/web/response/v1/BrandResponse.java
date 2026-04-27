@@ -3,12 +3,11 @@ package com.nexus.catalog.application.dto.web.response.v1;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.nexus.catalog.application.dto.web.view.OutboundView;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
-import java.util.List;
+import java.time.Instant;
 
 @NullMarked
-public record CategoryResponse(
+public record BrandResponse(
 
         @JsonView(OutboundView.Brief.class)
         Long id,
@@ -16,18 +15,17 @@ public record CategoryResponse(
         @JsonView(OutboundView.Brief.class)
         String name,
 
-        @JsonView(OutboundView.Brief.class)
-        String slug,
-
-        @Nullable
         @JsonView(OutboundView.Detail.class)
-        CategoryResponse parent,
+        String website,
 
         @JsonView(OutboundView.Detail.class)
-        List<CategoryResponse> subCategories,
+        String logoUrl,
 
         @JsonView(OutboundView.Detail.class)
-        boolean active
+        Boolean active,
+
+        @JsonView(OutboundView.Detail.class)
+        Instant createdDate
 
 ) {
 }
