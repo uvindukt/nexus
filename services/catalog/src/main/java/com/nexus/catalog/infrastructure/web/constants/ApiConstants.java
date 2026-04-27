@@ -23,4 +23,15 @@ public final class ApiConstants {
         public static final String TAG = "Product Attribute Management";
     }
 
+    public static final class Products {
+        public static final String BASE = V1 + "/products";
+        public static final String TAG = "Product Management";
+    }
+
+    public static final class Metadata {
+        public static final String BASE = V1 + "/metadata";
+        public static final String TAG = "Metadata Management";
+        public static final String PRODUCT_STATUS = "/product-status";
+    }
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.nexus.catalog.application.dto.web.validation.Validate;
 import com.nexus.catalog.application.dto.web.view.InboundView;
 import com.nexus.catalog.domain.model.ProductStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -39,6 +40,7 @@ public record ProductRequest(
         @JsonView(InboundView.Common.class)
         BigDecimal price,
 
+        @Schema(implementation = ProductStatus.class)
         @NotNull(groups = Validate.Create.class, message = "product.status.required")
         @JsonView(InboundView.Common.class)
         ProductStatus status,

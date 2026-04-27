@@ -38,22 +38,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://your-auth-server/realms/nexus # Replace with your Actual Auth Server URL
-  springdoc:
-    writer-with-json-view: true
-    model-and-view-allowed: true
-    show-actuator: false
-    default-produces-media-type: application/json
-    group-configs:
-      - group: 'Catalog API'
-        paths-to-match: /v1/**
-    api-docs:
-      enabled: true
-      swagger-ui:
-        enabled: true
-    open-api:
-      info:
-        title: "Nexus Catalog"
-        version: "v1"
 eureka:
   client:
     register-with-eureka: true
