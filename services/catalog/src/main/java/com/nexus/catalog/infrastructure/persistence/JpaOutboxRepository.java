@@ -20,6 +20,6 @@ public interface JpaOutboxRepository extends JpaRepository<Outbox, UUID>, Outbox
             Pageable pageable
     );
 
-    List<Outbox> findByStatus(OutboxStatus status);
+    List<Outbox> findByStatus(OutboxStatus status, Pageable pageable);
 
 }

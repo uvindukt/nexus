@@ -1,11 +1,11 @@
 package com.nexus.catalog.infrastructure.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.request.v1.ProductRequest;
-import com.nexus.catalog.application.dto.web.response.v1.ProductResponse;
-import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.InboundView;
 import com.nexus.catalog.application.dto.web.OutboundView;
+import com.nexus.catalog.application.dto.web.Validate;
+import com.nexus.catalog.application.dto.web.request.v1.ProductRequest;
+import com.nexus.catalog.application.dto.web.response.v1.ProductResponse;
 import com.nexus.catalog.application.service.ProductService;
 import com.nexus.catalog.infrastructure.web.constants.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +51,7 @@ public class ProductController {
     @PutMapping(ApiConstants.ID)
     @JsonView(OutboundView.Detail.class)
     @Operation(summary = "openapi.product.update.sum", description = "openapi.product.update.desc")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Validated(Validate.Update.class) @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @JsonView(InboundView.Update.class) @Validated(Validate.Update.class) @RequestBody ProductRequest productRequest) {
         return ResponseEntity.ok(productService.update(id, productRequest));
     }
 

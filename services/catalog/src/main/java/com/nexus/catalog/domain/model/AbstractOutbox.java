@@ -42,7 +42,6 @@ public abstract class AbstractOutbox {
     @Column(updatable = false)
     protected Instant createdAt = Instant.now();
 
-    @Column(insertable = false)
     protected Instant processedAt;
 
 }

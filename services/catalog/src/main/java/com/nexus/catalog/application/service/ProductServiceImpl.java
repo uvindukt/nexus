@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
+    private final OutboxService outboxService;
 
     @Transactional
     @Override
@@ -47,7 +48,10 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brand);
         product.setCategory(category);
 
-        return productMapper.toResponse(productRepository.save(product));
+        product = productRepository.save(product);
+        outboxService.save(product);
+
+        return productMapper.toResponse(product);
 
     }
 
@@ -62,14 +66,14 @@ public class ProductServiceImpl implements ProductService {
                     productMapper.updateModel(productRequest, product);
 
                     // Changing Brand scenario
-                    if (!product.getBrand().getId().equals(productRequest.brandId())) {
+                    if (product.getBrand() != null && !product.getBrand().getId().equals(productRequest.brandId())) {
                         Brand brand = brandRepository.findById(productRequest.brandId())
                                 .orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
                         product.setBrand(brand);
                     }
 
                     // Changing Category scenario
-                    if (!product.getCategory().getId().equals(productRequest.categoryId())) {
+                    if (product.getCategory() != null && !product.getCategory().getId().equals(productRequest.categoryId())) {
                         Category category = categoryRepository.findById(productRequest.categoryId())
                                 .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
                         product.setCategory(category);
