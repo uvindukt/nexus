@@ -1,0 +1,13 @@
+package com.nexus.catalog.domain.model;
+
+public enum OutboxEventType {
+    PRODUCT_CREATED,
+    PRODUCT_UPDATED,
+    PRODUCT_DELETED,
+    BRAND_CREATED,
+    BRAND_UPDATED,
+    BRAND_DELETED,
+    CATEGORY_CREATED,
+    CATEGORY_UPDATED,
+    CATEGORY_DELETED
+}
