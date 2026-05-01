@@ -42,7 +42,7 @@ public class BrandServiceImpl implements BrandService {
 
                     validateUniqueness(brandRequest);
                     brandMapper.updateModel(brandRequest, brand);
-                    return brandMapper.toResponse(brandRepository.save(brand));
+                    return brandMapper.toResponse(brand);
 
                 })
                 .orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));

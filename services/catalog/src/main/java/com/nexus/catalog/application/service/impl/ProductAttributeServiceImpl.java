@@ -122,7 +122,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         productAttributeRepository.findByKey(request.key())
                 .ifPresent(attribute -> {
                             if (request.id() == null || !attribute.getId().equals(request.id())) {
-                                throw new DuplicateEntryException(ProductAttribute.class.getSimpleName(), request.key(), request.key());
+                                throw new DuplicateEntryException(ProductAttribute.class.getSimpleName(), request.key(), request.value());
                             }
                         }
                 );
