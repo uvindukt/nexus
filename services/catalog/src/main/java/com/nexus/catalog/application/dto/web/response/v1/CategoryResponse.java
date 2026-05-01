@@ -1,7 +1,7 @@
 package com.nexus.catalog.application.dto.web.response.v1;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.view.OutboundView;
+import com.nexus.catalog.application.dto.web.OutboundView;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 

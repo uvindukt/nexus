@@ -1,7 +1,7 @@
 package com.nexus.catalog.infrastructure.messaging.publisher;
 
-import com.nexus.catalog.application.dto.messaging.v1.OutboxEvent;
-import com.nexus.catalog.domain.port.OutboxPublisherPort;
+import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
+import com.nexus.catalog.domain.port.out.OutboxPublisherPort;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

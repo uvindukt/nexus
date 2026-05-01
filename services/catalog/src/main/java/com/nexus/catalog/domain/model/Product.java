@@ -7,12 +7,15 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
+@NullMarked
 @Getter
 @Setter
 @Entity
@@ -46,9 +49,11 @@ public class Product {
     @Column(nullable = false, length = 20)
     private ProductStatus status = ProductStatus.DRAFT;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private Brand brand;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 

@@ -1,4 +1,4 @@
-package com.nexus.catalog.application.dto.messaging.v1;
+package com.nexus.catalog.application.dto.messaging.publisher.v1;
 
 public record OutboxEvent(
         String id,

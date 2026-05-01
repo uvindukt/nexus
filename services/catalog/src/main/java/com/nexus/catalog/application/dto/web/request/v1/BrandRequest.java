@@ -1,8 +1,8 @@
 package com.nexus.catalog.application.dto.web.request.v1;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.validation.Validate;
-import com.nexus.catalog.application.dto.web.view.InboundView;
+import com.nexus.catalog.application.dto.web.Validate;
+import com.nexus.catalog.application.dto.web.InboundView;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;

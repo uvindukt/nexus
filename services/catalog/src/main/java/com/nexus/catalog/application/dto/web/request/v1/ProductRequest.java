@@ -1,8 +1,8 @@
 package com.nexus.catalog.application.dto.web.request.v1;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.validation.Validate;
-import com.nexus.catalog.application.dto.web.view.InboundView;
+import com.nexus.catalog.application.dto.web.Validate;
+import com.nexus.catalog.application.dto.web.InboundView;
 import com.nexus.catalog.domain.model.ProductStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

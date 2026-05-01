@@ -1,9 +1,8 @@
-package com.nexus.catalog.application.service.impl;
+package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.ProductAttributeRequest;
 import com.nexus.catalog.application.dto.web.response.v1.ProductAttributeResponse;
 import com.nexus.catalog.application.mapper.web.ProductAttributeMapper;
-import com.nexus.catalog.application.service.ProductAttributeService;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Product;

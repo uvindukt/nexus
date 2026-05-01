@@ -1,4 +1,4 @@
-package com.nexus.catalog.application.dto.web.validation;
+package com.nexus.catalog.application.dto.web;
 
 import jakarta.validation.groups.Default;
 

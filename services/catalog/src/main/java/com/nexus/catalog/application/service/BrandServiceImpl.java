@@ -1,9 +1,8 @@
-package com.nexus.catalog.application.service.impl;
+package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.BrandRequest;
 import com.nexus.catalog.application.dto.web.response.v1.BrandResponse;
 import com.nexus.catalog.application.mapper.web.BrandMapper;
-import com.nexus.catalog.application.service.BrandService;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Brand;

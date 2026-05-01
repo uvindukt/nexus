@@ -1,4 +1,4 @@
-package com.nexus.catalog.application.dto.web.view;
+package com.nexus.catalog.application.dto.web;
 
 
 public interface OutboundView {

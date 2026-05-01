@@ -1,6 +1,5 @@
 package com.nexus.catalog.application.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.Product;
 
@@ -9,13 +8,19 @@ import java.time.Instant;
 public interface OutboxService {
 
     /**
-     * Fetch pending messages and publish
+     * Saves an {@link Outbox} entity related to the provided {@link Product}
      *
-     * @param product Created {@link Product}
-     * @return {@link Outbox}
-     * @throws JsonProcessingException When failed to convert {@link Product} to JSON
+     * @param product Product object, which is the payload
+     * @return {@link Product}
      */
-    Outbox publish(Product product) throws JsonProcessingException;
+    Outbox save(Product product);
+
+    /**
+     * Publish a single {@link Outbox}
+     *
+     * @param outbox Outbox entity
+     */
+    void publishSingle(Outbox outbox);
 
     /**
      * Archives a set number of entries from Outbox table to improve performance

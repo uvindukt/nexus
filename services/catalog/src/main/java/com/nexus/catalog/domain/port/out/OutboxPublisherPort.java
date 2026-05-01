@@ -1,6 +1,6 @@
-package com.nexus.catalog.domain.port;
+package com.nexus.catalog.domain.port.out;
 
-import com.nexus.catalog.application.dto.messaging.v1.OutboxEvent;
+import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
 
 /**
  * Port interface for publishing outbox events.

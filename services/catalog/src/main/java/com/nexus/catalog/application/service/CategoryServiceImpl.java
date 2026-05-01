@@ -1,9 +1,8 @@
-package com.nexus.catalog.application.service.impl;
+package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
 import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
 import com.nexus.catalog.application.mapper.web.CategoryMapper;
-import com.nexus.catalog.application.service.CategoryService;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.exception.InvalidHierarchyException;

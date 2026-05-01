@@ -1,8 +1,11 @@
 package com.nexus.catalog.domain.repository;
 
 import com.nexus.catalog.domain.model.Outbox;
+import com.nexus.catalog.domain.model.OutboxStatus;
+import org.springframework.data.domain.Pageable;
 
-import java.util.UUID;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * Port interface for Outbox persistence operations.
@@ -12,6 +15,13 @@ public interface OutboxRepository {
 
     Outbox save(Outbox outbox);
 
-    void deleteById(UUID id);
+    List<Outbox> findByStatusAndCreatedAtBefore(
+            OutboxStatus status,
+            Instant threshold,
+            Pageable pageable
+    );
 
+    List<Outbox> findByStatus(OutboxStatus status);
+
+    void deleteAll(List<Outbox> candidates);
 }
