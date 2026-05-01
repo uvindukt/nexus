@@ -7,6 +7,7 @@ import com.nexus.catalog.domain.repository.OutboxRepository;
 import com.nexus.catalog.infrastructure.config.OutboxProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class OutboxScheduler {
 
         log.info("Outbox scheduler started");
 
-        List<Outbox> outboxRecords = outboxRepository.findByStatus(OutboxStatus.PROCESSED);
+        List<Outbox> outboxRecords = outboxRepository.findByStatus(OutboxStatus.PENDING, PageRequest.of(0, properties.getBatchSize()));
 
         outboxRecords.forEach(outbox -> {
             try {
@@ -35,6 +36,8 @@ public class OutboxScheduler {
                 log.error("Failed to publish outbox record {}", outbox.getId(), e);
             }
         });
+
+        log.info("Outbox scheduler finished. Published {} records", outboxRecords.size());
 
     }
 

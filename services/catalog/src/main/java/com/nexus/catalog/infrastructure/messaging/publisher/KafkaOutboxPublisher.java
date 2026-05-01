@@ -1,7 +1,7 @@
 package com.nexus.catalog.infrastructure.messaging.publisher;
 
 import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
-import com.nexus.catalog.domain.port.out.OutboxPublisherPort;
+import com.nexus.catalog.domain.port.out.OutboxPublisher;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OutboxPublisher implements OutboxPublisherPort {
+public class KafkaOutboxPublisher implements OutboxPublisher {
 
     private final StreamBridge streamBridge;
     private final MessagingBindingProperties messagingBindingProperties;

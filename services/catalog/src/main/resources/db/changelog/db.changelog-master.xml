@@ -4,15 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="20260429-add-outbox-partial-index" author="nexus">
+    <include file="db/changelog/001-initial-schema.sql" relativeToChangelogFile="false"/>
 
-        <createIndex tableName="outbox" indexName="idx_outbox_status_pending">
-            <column name="status"/>
-        </createIndex>
-        <modifySql dbms="postgresql">
-            <append value=" WHERE status = 'PENDING'"/>
-        </modifySql>
-
-    </changeSet>
+    <includeAll path="db/changelog/2026/05" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

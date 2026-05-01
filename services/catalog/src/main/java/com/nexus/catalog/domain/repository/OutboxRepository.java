@@ -3,17 +3,17 @@ package com.nexus.catalog.domain.repository;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.OutboxStatus;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.ListCrudRepository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Port interface for Outbox persistence operations.
  * Infrastructure adapters (e.g. JPA) implement this contract.
  */
-public interface OutboxRepository {
-
-    Outbox save(Outbox outbox);
+public interface OutboxRepository extends ListCrudRepository<Outbox, UUID> {
 
     List<Outbox> findByStatusAndCreatedAtBefore(
             OutboxStatus status,
@@ -21,7 +21,6 @@ public interface OutboxRepository {
             Pageable pageable
     );
 
-    List<Outbox> findByStatus(OutboxStatus status);
+    List<Outbox> findByStatus(OutboxStatus status, Pageable pageable);
 
-    void deleteAll(List<Outbox> candidates);
 }

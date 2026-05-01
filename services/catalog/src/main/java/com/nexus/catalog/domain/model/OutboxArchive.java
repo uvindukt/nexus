@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -16,7 +17,8 @@ import java.time.Instant;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class OutboxArchive extends AbstractOutbox {
 
+    @CreationTimestamp
     @Column(updatable = false)
-    private Instant archivedAt = Instant.now();
+    private Instant archivedAt;
 
 }

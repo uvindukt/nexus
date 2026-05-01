@@ -65,6 +65,7 @@ public class Product {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Nullable
     @UpdateTimestamp
     private Instant updatedAt;
 

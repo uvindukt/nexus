@@ -9,5 +9,5 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class OutboxProperties {
     String cron;
-    Integer thresholdDays;
+    Integer batchSize;
 }

@@ -6,7 +6,7 @@ import com.nexus.catalog.application.mapper.messaging.OutboxMapper;
 import com.nexus.catalog.application.mapper.messaging.ProductEventMapper;
 import com.nexus.catalog.domain.exception.OutboxPublishException;
 import com.nexus.catalog.domain.model.*;
-import com.nexus.catalog.domain.port.out.OutboxPublisherPort;
+import com.nexus.catalog.domain.port.out.OutboxPublisher;
 import com.nexus.catalog.domain.repository.OutboxArchiveRepository;
 import com.nexus.catalog.domain.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,12 @@ public class OutboxServiceImpl implements OutboxService {
 
     private final OutboxArchiveRepository outboxArchiveRepository;
     private final OutboxRepository outboxRepository;
-    private final OutboxPublisherPort outboxPublisherPort;
+    private final OutboxPublisher outboxPublisher;
     private final OutboxMapper outboxMapper;
     private final ProductEventMapper productEventMapper;
     private final ObjectMapper objectMapper;
 
+    @Transactional
     @Override
     public Outbox save(Product product) {
 
@@ -51,7 +52,6 @@ public class OutboxServiceImpl implements OutboxService {
 
         outbox = outboxRepository.save(outbox);
 
-
         return outbox;
 
     }
@@ -60,9 +60,11 @@ public class OutboxServiceImpl implements OutboxService {
     @Override
     public void publishSingle(Outbox outbox) {
 
-        outboxPublisherPort.publishOutbox(outboxMapper.toEvent(outbox), String.valueOf(outbox.getId()));
+        outboxPublisher.publishOutbox(outboxMapper.toEvent(outbox), String.valueOf(outbox.getId()));
         outbox.setStatus(OutboxStatus.PROCESSED);
         outbox.setProcessedAt(Instant.now());
+
+        outboxRepository.save(outbox); // Detached entity, hence the explicit save
 
     }
 

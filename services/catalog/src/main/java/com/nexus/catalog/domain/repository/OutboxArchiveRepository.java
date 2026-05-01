@@ -1,17 +1,14 @@
 package com.nexus.catalog.domain.repository;
 
 import com.nexus.catalog.domain.model.OutboxArchive;
+import org.springframework.data.repository.ListCrudRepository;
 
-import java.time.Instant;
-import java.util.List;
+import java.util.UUID;
 
 /**
  * Port interface for OutboxArchive persistence operations.
  * Infrastructure adapters (e.g. JPA) implement this contract.
  */
-public interface OutboxArchiveRepository {
+public interface OutboxArchiveRepository extends ListCrudRepository<OutboxArchive, UUID> {
 
-    Integer archiveOutboxEntries(Instant threshold, Integer limit);
-
-    void saveAll(List<OutboxArchive> archives);
 }
