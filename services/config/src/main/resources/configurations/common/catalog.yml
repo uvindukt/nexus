@@ -1,7 +1,7 @@
 nexus:
   messaging:
     bindings:
-      product-out: productEventSupplier-out-0
+      product-out: product-out-0
 server:
   port: 8081
 spring:

@@ -9,10 +9,9 @@ import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Brand;
 import com.nexus.catalog.domain.model.Category;
 import com.nexus.catalog.domain.model.Product;
-import com.nexus.catalog.domain.model.ProductStatus;
-import com.nexus.catalog.infrastructure.persistence.BrandRepository;
-import com.nexus.catalog.infrastructure.persistence.CategoryRepository;
-import com.nexus.catalog.infrastructure.persistence.ProductRepository;
+import com.nexus.catalog.domain.repository.BrandRepository;
+import com.nexus.catalog.domain.repository.CategoryRepository;
+import com.nexus.catalog.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
@@ -90,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId)
                 .map(product -> {
 
-                    product.setStatus(ProductStatus.DELETED);
+                    product.markAsDeleted();
                     return productMapper.toResponse(product);
 
                 })

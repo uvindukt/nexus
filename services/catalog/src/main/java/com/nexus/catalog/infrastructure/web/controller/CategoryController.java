@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(ApiConstants.Categories.BASE)
+@RequestMapping(value = ApiConstants.Categories.BASE, produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = ApiConstants.Categories.TAG)
 @RequiredArgsConstructor
 public class CategoryController {

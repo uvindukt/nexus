@@ -7,7 +7,7 @@ import com.nexus.catalog.application.service.BrandService;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Brand;
-import com.nexus.catalog.infrastructure.persistence.BrandRepository;
+import com.nexus.catalog.domain.repository.BrandRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;

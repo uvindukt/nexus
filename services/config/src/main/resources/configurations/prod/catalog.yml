@@ -1,38 +1,30 @@
 spring:
   datasource:
     username: postgres
-    password: admin
+    password: postgres
     url: jdbc:postgresql://localhost:5432/catalog
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
-      hibernate.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
       hibernate:
+        temp.use_jdbc_metadata_defaults: true
         jdbc:
           fetch_size: 50
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
-    function:
-      definition: productEventSupplier
     stream:
       bindings:
-        productEventSupplier-out-0:
-          destination: catalog.product.events
+        product-out-0:
+          destination: product
           producer:
             partition-count: 2
       kafka:
         binder:
           brokers: localhost:9092
           auto-create-topics: true
-        bindings:
-          productEventSupplier-out-0:
-            producer:
-              configuration:
-                key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:
       resourceserver:

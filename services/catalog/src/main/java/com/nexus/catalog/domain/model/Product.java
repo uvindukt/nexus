@@ -1,10 +1,12 @@
 package com.nexus.catalog.domain.model;
 
+import com.nexus.catalog.domain.exception.InvalidProductStateException;
+import com.nexus.catalog.domain.exception.ProductErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -58,8 +60,33 @@ public class Product {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @CreationTimestamp
-    @LastModifiedDate
+    @UpdateTimestamp
     private Instant updatedAt;
+
+    // ── Domain Behaviour ──────────────────────────────────────────
+
+    /**
+     * Soft-deletes this product.
+     *
+     * @throws InvalidProductStateException if already deleted
+     */
+    public void markAsDeleted() {
+        if (this.status == ProductStatus.DELETED) {
+            throw new InvalidProductStateException(ProductErrorCode.ACTIVATION_OF_DELETED_PRODUCT);
+        }
+        this.status = ProductStatus.DELETED;
+    }
+
+    /**
+     * Activates a draft or archived product.
+     *
+     * @throws InvalidProductStateException if the product is deleted
+     */
+    public void activate() {
+        if (this.status == ProductStatus.DELETED) {
+            throw new InvalidProductStateException(ProductErrorCode.ACTIVATION_OF_DELETED_PRODUCT);
+        }
+        this.status = ProductStatus.ACTIVE;
+    }
 
 }

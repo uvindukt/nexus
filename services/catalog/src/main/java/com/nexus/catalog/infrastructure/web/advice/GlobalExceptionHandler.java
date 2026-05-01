@@ -3,6 +3,7 @@ package com.nexus.catalog.infrastructure.web.advice;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.exception.InvalidHierarchyException;
+import com.nexus.catalog.domain.exception.InvalidProductStateException;
 import com.nexus.catalog.infrastructure.web.constants.ErrorConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,22 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty(ErrorConstants.TIMESTAMP, Instant.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+
+    }
+
+    @ExceptionHandler(InvalidProductStateException.class)
+    public ResponseEntity<ProblemDetail> handleInvalidProductState(InvalidProductStateException exception) {
+
+        String message = messageSource.getMessage(exception.getMessage(), new Object[]{exception.getErrorCode()}, LocaleContextHolder.getLocale());
+        log.error(ErrorConstants.Log.INVALID_PRODUCT_STATE, message);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, message);
+        problemDetail.setType(URI.create(ErrorConstants.Type.INVALID_PRODUCT_STATE));
+        problemDetail.setTitle(ErrorConstants.Title.INVALID_PRODUCT_STATE);
+        problemDetail.setProperty(ErrorConstants.TIMESTAMP, Instant.now());
+        problemDetail.setProperty("errorCode", exception.getErrorCode().name());
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(problemDetail);
 
     }
 

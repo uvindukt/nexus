@@ -8,7 +8,7 @@ import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.exception.InvalidHierarchyException;
 import com.nexus.catalog.domain.model.Category;
-import com.nexus.catalog.infrastructure.persistence.CategoryRepository;
+import com.nexus.catalog.domain.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;

@@ -22,7 +22,7 @@ public class SecurityConfig {
                         // 2. Permit Actuator health checks (if needed for your Gateway)
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         // 3. Authenticate everything else
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 // 4. Tell Spring to act as a Resource Server (expecting Bearer Tokens)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

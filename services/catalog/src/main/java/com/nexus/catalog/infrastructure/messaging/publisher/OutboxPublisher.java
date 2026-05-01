@@ -1,7 +1,7 @@
 package com.nexus.catalog.infrastructure.messaging.publisher;
 
-import com.nexus.catalog.application.dto.messaging.ProductCreatedEvent;
-import com.nexus.catalog.application.dto.messaging.envelope.EventEnvelope;
+import com.nexus.catalog.application.dto.messaging.v1.OutboxEvent;
+import com.nexus.catalog.domain.port.OutboxPublisherPort;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,19 +14,20 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ProductEventPublisher {
+public class OutboxPublisher implements OutboxPublisherPort {
 
     private final StreamBridge streamBridge;
     private final MessagingBindingProperties messagingBindingProperties;
 
-    public void publishProductCreated(EventEnvelope<ProductCreatedEvent> eventEnvelope, String key) {
+    public void publishOutbox(OutboxEvent outboxEvent, String key) {
 
-        Message<EventEnvelope<ProductCreatedEvent>> message = MessageBuilder
-                .withPayload(eventEnvelope)
+        Message<OutboxEvent> message = MessageBuilder
+                .withPayload(outboxEvent)
                 .setHeader(KafkaHeaders.KEY, key)
                 .build();
 
         streamBridge.send(messagingBindingProperties.getProductOut(), message);
+
     }
 
 }
