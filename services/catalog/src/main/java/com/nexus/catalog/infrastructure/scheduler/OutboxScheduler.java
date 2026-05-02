@@ -25,17 +25,17 @@ public class OutboxScheduler {
     @Scheduled(cron = "${outbox.cron}")
     public void run() {
 
-        log.info("Outbox scheduler started");
-
         List<Outbox> outboxRecords = outboxRepository.findByStatusAndRetryCountLessThan(OutboxStatus.PENDING, properties.getMaxRetries(), PageRequest.of(0, properties.getBatchSize()));
+
+        if (!outboxRecords.isEmpty()) {
+            log.info("Outbox scheduler started");
+        }
 
         int failures = 0;
         for (Outbox outbox : outboxRecords) {
 
             try {
-
                 outboxService.publishSingle(outbox);
-
             } catch (Exception e) {
 
                 if (outbox.getRetryCount() + 1 >= properties.getMaxRetries()) {
@@ -46,11 +46,14 @@ public class OutboxScheduler {
 
                 failures++;
                 log.error("Failed to publish outbox record {}", outbox.getId(), e);
-
             }
+
         }
 
-        log.info("Outbox scheduler finished. Published {}/{} records ({} failed)", outboxRecords.size() - failures, outboxRecords.size(), failures);
+        if (!outboxRecords.isEmpty()) {
+            log.info("Outbox scheduler finished. Published {}/{} records ({} failed)", outboxRecords.size() - failures, outboxRecords.size(), failures);
+        }
+
 
     }
 
