@@ -21,6 +21,6 @@ public interface OutboxRepository extends ListCrudRepository<Outbox, UUID> {
             Pageable pageable
     );
 
-    List<Outbox> findByStatus(OutboxStatus status, Pageable pageable);
+    List<Outbox> findByStatusAndRetryCountLessThan(OutboxStatus status, Integer maxRetries, Pageable pageable);
 
 }

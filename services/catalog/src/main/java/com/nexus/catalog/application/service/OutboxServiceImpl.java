@@ -33,7 +33,7 @@ public class OutboxServiceImpl implements OutboxService {
 
     @Transactional
     @Override
-    public Outbox save(Product product) {
+    public void createEvent(Product product, OutboxEventType outboxEventType) {
 
         String payload;
 
@@ -44,15 +44,13 @@ public class OutboxServiceImpl implements OutboxService {
         }
 
         Outbox outbox = Outbox.builder()
-                .type(OutboxEventType.PRODUCT_CREATED)
-                .aggregateType(Product.class.getName())
+                .type(outboxEventType)
+                .aggregateType(Product.class.getSimpleName())
                 .aggregateId(String.valueOf(product.getId()))
                 .payload(payload)
                 .build();
 
-        outbox = outboxRepository.save(outbox);
-
-        return outbox;
+        outboxRepository.save(outbox);
 
     }
 
@@ -65,6 +63,28 @@ public class OutboxServiceImpl implements OutboxService {
         outbox.setProcessedAt(Instant.now());
 
         outboxRepository.save(outbox); // Detached entity, hence the explicit save
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    public void markFailedAttempt(Outbox outbox) {
+
+        outbox.setRetryCount(outbox.getRetryCount() + 1);
+        outbox.setLastAttemptedAt(Instant.now());
+        outboxRepository.save(outbox);
+
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    public void markFailedEvent(Outbox outbox) {
+
+        outbox.setRetryCount(outbox.getRetryCount() + 1);
+        outbox.setLastAttemptedAt(Instant.now());
+        outbox.setStatus(OutboxStatus.FAILED);
+        outboxRepository.save(outbox);
 
     }
 

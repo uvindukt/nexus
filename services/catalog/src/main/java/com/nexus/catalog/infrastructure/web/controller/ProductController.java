@@ -61,4 +61,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.delete(id));
     }
 
+    @PatchMapping(ApiConstants.ID)
+    @Operation(summary = "openapi.product.activate.sum", description = "openapi.product.activate.desc")
+    public ResponseEntity<ProductResponse> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.activate(id));
+    }
+
 }

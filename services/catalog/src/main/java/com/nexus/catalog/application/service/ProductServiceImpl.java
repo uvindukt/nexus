@@ -7,6 +7,7 @@ import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Brand;
 import com.nexus.catalog.domain.model.Category;
+import com.nexus.catalog.domain.model.OutboxEventType;
 import com.nexus.catalog.domain.model.Product;
 import com.nexus.catalog.domain.repository.BrandRepository;
 import com.nexus.catalog.domain.repository.CategoryRepository;
@@ -39,17 +40,15 @@ public class ProductServiceImpl implements ProductService {
 
         validateUniqueness(productRequest);
 
-        Brand brand = brandRepository.findById(productRequest.brandId())
-                .orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
-        Category category = categoryRepository.findById(productRequest.categoryId())
-                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        Brand brand = brandRepository.findById(productRequest.brandId()).orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
+        Category category = categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
         Product product = productMapper.toModel(productRequest);
         product.setBrand(brand);
         product.setCategory(category);
 
         product = productRepository.save(product);
-        outboxService.save(product);
+        outboxService.createEvent(product, OutboxEventType.PRODUCT_CREATED);
 
         return productMapper.toResponse(product);
 
@@ -59,44 +58,54 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse update(Long productId, ProductRequest productRequest) {
 
-        return productRepository.findById(productId)
-                .map(product -> {
+        return productRepository.findById(productId).map(product -> {
 
-                    validateUniqueness(productRequest);
-                    productMapper.updateModel(productRequest, product);
+            validateUniqueness(productRequest);
+            productMapper.updateModel(productRequest, product);
 
-                    // Changing Brand scenario
-                    if (product.getBrand() != null && !product.getBrand().getId().equals(productRequest.brandId())) {
-                        Brand brand = brandRepository.findById(productRequest.brandId())
-                                .orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
-                        product.setBrand(brand);
-                    }
+            // Changing Brand scenario
+            if (product.getBrand() != null && !product.getBrand().getId().equals(productRequest.brandId())) {
+                Brand brand = brandRepository.findById(productRequest.brandId()).orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
+                product.setBrand(brand);
+            }
 
-                    // Changing Category scenario
-                    if (product.getCategory() != null && !product.getCategory().getId().equals(productRequest.categoryId())) {
-                        Category category = categoryRepository.findById(productRequest.categoryId())
-                                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
-                        product.setCategory(category);
-                    }
+            // Changing Category scenario
+            if (product.getCategory() != null && !product.getCategory().getId().equals(productRequest.categoryId())) {
+                Category category = categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+                product.setCategory(category);
+            }
 
-                    return productMapper.toResponse(product);
+            outboxService.createEvent(product, OutboxEventType.PRODUCT_UPDATED);
+            return productMapper.toResponse(product);
 
-                })
-                .orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
     }
 
     @Transactional
     @Override
     public ProductResponse delete(Long productId) {
 
-        return productRepository.findById(productId)
-                .map(product -> {
+        return productRepository.findById(productId).map(product -> {
 
-                    product.markAsDeleted();
-                    return productMapper.toResponse(product);
+            product.markAsDeleted();
+            outboxService.createEvent(product, OutboxEventType.PRODUCT_DELETED);
+            return productMapper.toResponse(product);
 
-                })
-                .orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+
+    }
+
+    @Transactional
+    @Override
+    public ProductResponse activate(Long productId) {
+
+        return productRepository.findById(productId).map(product -> {
+
+            product.activate();
+            outboxService.createEvent(product, OutboxEventType.PRODUCT_ACTIVATED);
+            return productMapper.toResponse(product);
+
+        }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
 
     }
 
@@ -104,9 +113,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse get(Long productId) {
 
-        return productRepository.findById(productId)
-                .map(productMapper::toResponse)
-                .orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        return productRepository.findById(productId).map(productMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
 
     }
 
@@ -114,9 +121,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse get(String sku) {
 
-        return productRepository.findBySku(sku)
-                .map(productMapper::toResponse)
-                .orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        return productRepository.findBySku(sku).map(productMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
 
     }
 
@@ -137,20 +142,19 @@ public class ProductServiceImpl implements ProductService {
     @NullMarked
     private void validateUniqueness(ProductRequest productRequest) {
 
-        productRepository.findBySkuOrSlug(productRequest.sku(), productRequest.slug())
-                .forEach(product -> {
+        productRepository.findBySkuOrSlug(productRequest.sku(), productRequest.slug()).forEach(product -> {
 
-                    if (productRequest.id() == null || !product.getId().equals(productRequest.id())) {
+            if (productRequest.id() == null || !product.getId().equals(productRequest.id())) {
 
-                        boolean skuMatch = product.getSku().equalsIgnoreCase(productRequest.sku());
-                        String field = skuMatch ? SKU : SLUG;
-                        String value = skuMatch ? productRequest.sku() : productRequest.slug();
+                boolean skuMatch = product.getSku().equalsIgnoreCase(productRequest.sku());
+                String field = skuMatch ? SKU : SLUG;
+                String value = skuMatch ? productRequest.sku() : productRequest.slug();
 
-                        throw new DuplicateEntryException(Product.class.getSimpleName(), field, value);
+                throw new DuplicateEntryException(Product.class.getSimpleName(), field, value);
 
-                    }
+            }
 
-                });
+        });
 
     }
 

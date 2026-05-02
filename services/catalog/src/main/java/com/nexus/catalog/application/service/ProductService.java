@@ -34,6 +34,14 @@ public interface ProductService {
     ProductResponse delete(Long productId);
 
     /**
+     * Activates a {@link Product} with provided ID
+     *
+     * @param productId Product ID
+     * @return {@link ProductResponse} object containing product data
+     */
+    ProductResponse activate(Long productId);
+
+    /**
      * Retrieves a {@link Product} with provided ID
      *
      * @param productId Product ID

@@ -20,11 +20,13 @@ spring:
         product-out-0:
           destination: product
           producer:
-            partition-count: 2
+            partition-count: 4
       kafka:
         binder:
-          brokers: localhost:9092
+          brokers: localhost:29092
           auto-create-topics: true
+          producer-properties:
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:
       resourceserver:

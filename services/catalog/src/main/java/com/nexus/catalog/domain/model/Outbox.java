@@ -1,11 +1,11 @@
 package com.nexus.catalog.domain.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
 
 @SuperBuilder
 @Getter
@@ -13,5 +13,12 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Outbox extends AbstractOutbox {
+
+    @Builder.Default
+    @Column(nullable = false)
+    protected Integer retryCount = 0;
+
+    @Column(insertable = false)
+    protected Instant lastAttemptedAt;
 
 }

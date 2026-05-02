@@ -1,39 +1,17 @@
-TODO
-
-Add Outbox Pattern
-------------------
-Save events in outbox_events table and have a @Scheduled Spring job read those from DB and publish to Kafka topic with StreamBridge
-
-
-Structure
----------
-```text
-com.nexus.catalog
-├ domain                     <-- THE HEART (Pure Business Logic)
-│   ├ model                  <-- JPA Entities (Product, Brand, Category)
-│   ├ repository             <-- Repository Interfaces (Ports)
-│   ├ port                   <-- Other Port Interfaces (OutboxEventPublisher)
-│   └ exception              <-- Domain-specific exceptions (EntityNotFound)
-│
-├ application                <-- THE ORCHESTRATION LAYER
-│   ├ service                <-- Service Interfaces
-│   │   └ impl               <-- Service Implementations (ProductServiceImpl)
-│   ├ mapper                 <-- MapStruct Interfaces
-│   │   ├ web                <-- Web DTO Mappers
-│   │   └ messaging          <-- Messaging Event Mappers
-│   └ dto                    <-- Data Transfer Objects
-│       ├ web                <-- Web Request/Response DTOs (versioned in v1/)
-│       └ messaging          <-- Messaging Event DTOs (versioned in v1/)
-│
-├ infrastructure             <-- THE OUTSIDE WORLD (Adapters)
-│   ├ persistence            <-- JPA Repository Implementations (Jpa*Repository)
-│   ├ messaging              <-- Kafka Publishers / Consumers
-│   │   ├ publisher          <-- Outbound event publishers
-│   │   └ consumer           <-- Inbound event consumers
-│   ├ scheduler              <-- Scheduled Jobs (Driving Adapters)
-│   ├ web                    <-- Web Layer
-│   │   ├ controller         <-- REST Controllers (Driving Adapters)
-│   │   ├ advice             <-- Global Exception Handlers
-│   │   └ constants          <-- ApiConstants, ErrorConstants
-│   └ config                 <-- SecurityConfig, MessagingConfig
-```
+Consumer side — actual Kafka DLQ
+When your inventory service (or any consumer) is implemented, Spring Cloud Stream handles DLQ natively. Add this to the consumer's application.yaml:
+yamlspring:
+cloud:
+stream:
+kafka:
+bindings:
+product-in-0:
+consumer:
+enable-dlq: true
+dlq-name: product.dlq
+dlq-partitions: 1
+max-attempts: 3
+back-off-initial-interval: 1000
+back-off-multiplier: 2.0
+back-off-max-interval: 10000
+This means: try 3 times with exponential backoff, then route the failed message to product.dlq instead of crashing. Spring Cloud Stream handles all of this automatically — no code changes needed on the consumer.

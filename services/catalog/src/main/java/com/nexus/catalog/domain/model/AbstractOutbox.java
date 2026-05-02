@@ -18,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class AbstractOutbox {
 
+    @Builder.Default
     @Id
     protected UUID id = UuidCreator.getTimeOrderedEpoch(); // UUIDv7 for better indexing performance
 
@@ -35,10 +36,12 @@ public abstract class AbstractOutbox {
     @Column(nullable = false, columnDefinition = "jsonb")
     protected String payload;
 
+    @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     protected OutboxStatus status = OutboxStatus.PENDING;
 
+    @Builder.Default
     @Column(updatable = false)
     protected Instant createdAt = Instant.now();
 

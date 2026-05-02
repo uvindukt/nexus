@@ -1,6 +1,7 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.domain.model.Outbox;
+import com.nexus.catalog.domain.model.OutboxEventType;
 import com.nexus.catalog.domain.model.Product;
 
 import java.time.Instant;
@@ -10,10 +11,10 @@ public interface OutboxService {
     /**
      * Saves an {@link Outbox} entity related to the provided {@link Product}
      *
-     * @param product Product object, which is the payload
-     * @return {@link Product}
+     * @param product         Product object, which is the payload
+     * @param outboxEventType Type of event eg: PRODUCT_CREATED, PRODUCT_UPDATED etc.
      */
-    Outbox save(Product product);
+    void createEvent(Product product, OutboxEventType outboxEventType);
 
     /**
      * Publish a single {@link Outbox}
@@ -21,6 +22,20 @@ public interface OutboxService {
      * @param outbox Outbox entity
      */
     void publishSingle(Outbox outbox);
+
+    /**
+     * Flags failed {@link Outbox} publish attempts
+     *
+     * @param outbox Outbox entity
+     */
+    void markFailedAttempt(Outbox outbox);
+
+    /**
+     * Updates {@link Outbox} status to FAILED
+     *
+     * @param outbox Outbox entity
+     */
+    void markFailedEvent(Outbox outbox);
 
     /**
      * Archives a set number of entries from Outbox table to improve performance

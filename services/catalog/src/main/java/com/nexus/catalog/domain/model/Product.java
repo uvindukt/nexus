@@ -78,7 +78,7 @@ public class Product {
      */
     public void markAsDeleted() {
         if (this.status == ProductStatus.DELETED) {
-            throw new InvalidProductStateException(ProductErrorCode.ACTIVATION_OF_DELETED_PRODUCT);
+            throw new InvalidProductStateException(ProductErrorCode.DELETION_OF_DELETED_PRODUCT);
         }
         this.status = ProductStatus.DELETED;
     }

@@ -1,16 +1,5 @@
 -- liquibase formatted sql
 
-DROP TABLE IF EXISTS outbox_archive CASCADE;
-DROP TABLE IF EXISTS outbox CASCADE;
-DROP TABLE IF EXISTS product_attribute CASCADE;
-DROP TABLE IF EXISTS product CASCADE;
-DROP TABLE IF EXISTS category CASCADE;
-DROP TABLE IF EXISTS brand CASCADE;
-
--- Also drop Liquibase's own tracking tables so it forgets the old history
-DROP TABLE IF EXISTS databasechangelog CASCADE;
-DROP TABLE IF EXISTS databasechangeloglock CASCADE;
-
 -- changeset nexus:001-01 labels:init
 CREATE TABLE brand
 (
