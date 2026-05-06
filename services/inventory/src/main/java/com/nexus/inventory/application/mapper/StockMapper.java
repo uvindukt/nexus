@@ -1,19 +1,19 @@
-package com.nexus.catalog.application.mapper.messaging;
+package com.nexus.inventory.application.mapper;
 
-import com.nexus.catalog.domain.model.ProductEvent;
-import com.nexus.catalog.domain.model.Product;
+import com.nexus.inventory.application.dto.web.response.v1.StockResponse;
+import com.nexus.inventory.domain.model.Stock;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
-        unmappedSourcePolicy = ReportingPolicy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        unmappedSourcePolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface ProductEventMapper {
+public interface StockMapper {
 
-    ProductEvent toEvent(Product product);
+    StockResponse toResponse(Stock stock);
 
 }

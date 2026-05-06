@@ -1,6 +1,6 @@
 package com.nexus.catalog.domain.port.out;
 
-import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
+import com.nexus.catalog.domain.model.OutboxEnvelope;
 
 /**
  * Port interface for publishing outbox events.
@@ -8,6 +8,6 @@ import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
  */
 public interface OutboxPublisher {
 
-    void publishOutbox(OutboxEvent outboxEvent, String key);
+    void publishOutbox(OutboxEnvelope outboxEnvelope, String key);
 
 }

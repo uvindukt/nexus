@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
 
         product = productRepository.save(product);
-        outboxService.createEvent(product, OutboxEventType.PRODUCT_CREATED);
+        outboxService.productEvent(product, OutboxEventType.PRODUCT_CREATED);
 
         return productMapper.toResponse(product);
 
@@ -61,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId).map(product -> {
 
             validateUniqueness(productRequest);
+            outboxService.productEvent(product, OutboxEventType.PRODUCT_UPDATED);
             productMapper.updateModel(productRequest, product);
 
             // Changing Brand scenario
@@ -75,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
                 product.setCategory(category);
             }
 
-            outboxService.createEvent(product, OutboxEventType.PRODUCT_UPDATED);
+            outboxService.productEvent(product, OutboxEventType.PRODUCT_UPDATED);
             return productMapper.toResponse(product);
 
         }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
@@ -88,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId).map(product -> {
 
             product.markAsDeleted();
-            outboxService.createEvent(product, OutboxEventType.PRODUCT_DELETED);
+            outboxService.productEvent(product, OutboxEventType.PRODUCT_DELETED);
             return productMapper.toResponse(product);
 
         }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
@@ -102,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId).map(product -> {
 
             product.activate();
-            outboxService.createEvent(product, OutboxEventType.PRODUCT_ACTIVATED);
+            outboxService.productEvent(product, OutboxEventType.PRODUCT_ACTIVATED);
             return productMapper.toResponse(product);
 
         }).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));

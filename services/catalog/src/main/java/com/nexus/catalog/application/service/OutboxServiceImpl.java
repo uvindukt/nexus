@@ -2,7 +2,7 @@ package com.nexus.catalog.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexus.catalog.application.mapper.messaging.OutboxMapper;
+import com.nexus.catalog.application.mapper.messaging.OutboxEnvelopeMapper;
 import com.nexus.catalog.application.mapper.messaging.ProductEventMapper;
 import com.nexus.catalog.domain.exception.OutboxPublishException;
 import com.nexus.catalog.domain.model.*;
@@ -27,13 +27,13 @@ public class OutboxServiceImpl implements OutboxService {
     private final OutboxArchiveRepository outboxArchiveRepository;
     private final OutboxRepository outboxRepository;
     private final OutboxPublisher outboxPublisher;
-    private final OutboxMapper outboxMapper;
+    private final OutboxEnvelopeMapper outboxEnvelopeMapper;
     private final ProductEventMapper productEventMapper;
     private final ObjectMapper objectMapper;
 
     @Transactional
     @Override
-    public void createEvent(Product product, OutboxEventType outboxEventType) {
+    public void productEvent(Product product, OutboxEventType outboxEventType) {
 
         String payload;
 
@@ -58,7 +58,7 @@ public class OutboxServiceImpl implements OutboxService {
     @Override
     public void publishSingle(Outbox outbox) {
 
-        outboxPublisher.publishOutbox(outboxMapper.toEvent(outbox), String.valueOf(outbox.getId()));
+        outboxPublisher.publishOutbox(outboxEnvelopeMapper.toEvent(outbox), String.valueOf(outbox.getId()));
         outbox.setStatus(OutboxStatus.PROCESSED);
         outbox.setProcessedAt(Instant.now());
 
@@ -99,7 +99,7 @@ public class OutboxServiceImpl implements OutboxService {
         }
 
         List<OutboxArchive> archives = candidateRecords.stream()
-                .map(outboxMapper::toArchive)
+                .map(outboxEnvelopeMapper::toArchive)
                 .toList();
 
         outboxArchiveRepository.saveAll(archives);

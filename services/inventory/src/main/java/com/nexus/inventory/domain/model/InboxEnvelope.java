@@ -1,6 +1,6 @@
-package com.nexus.catalog.application.dto.messaging.publisher.v1;
+package com.nexus.inventory.domain.model;
 
-public record OutboxEvent(
+public record InboxEnvelope(
         String id,
         String aggregateType,
         String aggregateId,

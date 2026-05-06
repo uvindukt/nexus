@@ -1,6 +1,6 @@
 package com.nexus.catalog.infrastructure.messaging.publisher;
 
-import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
+import com.nexus.catalog.domain.model.OutboxEnvelope;
 import com.nexus.catalog.domain.port.out.OutboxPublisher;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ public class KafkaOutboxPublisher implements OutboxPublisher {
     private final StreamBridge streamBridge;
     private final MessagingBindingProperties messagingBindingProperties;
 
-    public void publishOutbox(OutboxEvent outboxEvent, String key) {
+    public void publishOutbox(OutboxEnvelope outboxEnvelope, String key) {
 
-        Message<OutboxEvent> message = MessageBuilder
-                .withPayload(outboxEvent)
+        Message<OutboxEnvelope> message = MessageBuilder
+                .withPayload(outboxEnvelope)
                 .setHeader(KafkaHeaders.KEY, key)
                 .build();
 

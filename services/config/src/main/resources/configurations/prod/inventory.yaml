@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/inventory
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        temp.use_jdbc_metadata_defaults: true
+        jdbc:
+          fetch_size: 50
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  cloud:
+    stream:
+      bindings:
+        product-in-0:
+          destination: product
+          group: inventory
+          consumer:
+            max-attempts: 3
+      kafka:
+        listener:
+          concurrency: 3
+        binder:
+          brokers: localhost:29092
+          auto-create-topics: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://your-auth-server/realms/nexus # Replace with your Actual Auth Server URL
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-admin:discovery-secure-password@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30

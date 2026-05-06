@@ -1,6 +1,6 @@
 package com.nexus.catalog.application.mapper.messaging;
 
-import com.nexus.catalog.application.dto.messaging.publisher.v1.OutboxEvent;
+import com.nexus.catalog.domain.model.OutboxEnvelope;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.OutboxArchive;
 import org.mapstruct.Mapper;
@@ -13,9 +13,9 @@ import org.mapstruct.ReportingPolicy;
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface OutboxMapper {
+public interface OutboxEnvelopeMapper {
 
-    OutboxEvent toEvent(Outbox outbox);
+    OutboxEnvelope toEvent(Outbox outbox);
 
     OutboxArchive toArchive(Outbox outbox);
 

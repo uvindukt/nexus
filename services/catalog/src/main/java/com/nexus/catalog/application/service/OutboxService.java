@@ -14,7 +14,7 @@ public interface OutboxService {
      * @param product         Product object, which is the payload
      * @param outboxEventType Type of event eg: PRODUCT_CREATED, PRODUCT_UPDATED etc.
      */
-    void createEvent(Product product, OutboxEventType outboxEventType);
+    void productEvent(Product product, OutboxEventType outboxEventType);
 
     /**
      * Publish a single {@link Outbox}

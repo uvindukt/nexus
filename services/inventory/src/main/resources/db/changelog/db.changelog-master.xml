@@ -6,6 +6,4 @@
 
     <include file="db/changelog/initial-schema.sql" relativeToChangelogFile="false"/>
 
-    <includeAll path="db/changelog/2026/05" relativeToChangelogFile="false"/>
-
 </databaseChangeLog>
