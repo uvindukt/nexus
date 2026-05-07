@@ -17,12 +17,23 @@ spring:
   cloud:
     stream:
       bindings:
-        product-in-0:
+        consume-in-0:
           destination: product
           group: inventory
           consumer:
             max-attempts: 3
+            back-off-initial-interval: 1000
+            back-off-multiplier: 2.0
+            back-off-max-interval: 10000
+            retryable-exceptions:
+              java.lang.IllegalArgumentException: false
+              java.lang.ClassCastException: false
       kafka:
+        bindings:
+          consume-in-0:
+            consumer:
+              enable-dlq: true
+              dlq-name: product.dlq
         listener:
           concurrency: 3
         binder:
@@ -32,7 +43,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://your-auth-server/realms/nexus # Replace with your Actual Auth Server URL
+          issuer-uri: http://your-auth-server/realms/nexus
 eureka:
   client:
     register-with-eureka: true

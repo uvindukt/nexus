@@ -1,11 +1,17 @@
 package com.nexus.inventory.application.service;
 
+import com.nexus.inventory.application.dto.web.request.v1.StockRequest;
+import com.nexus.inventory.application.dto.web.response.v1.StockResponse;
+import com.nexus.inventory.application.mapper.StockMapper;
+import com.nexus.inventory.domain.exception.EntryNotFoundException;
+import com.nexus.inventory.domain.model.Stock;
 import com.nexus.inventory.domain.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -13,14 +19,57 @@ import java.math.BigDecimal;
 public class StockServiceImpl implements StockService {
 
     private final StockRepository stockRepository;
+    private final StockMapper stockMapper;
 
+    @Transactional
     @Override
-    public void addStock(Long productId) {
+    public StockResponse upsertStock(Long productId, StockRequest request) {
+
+        var stock = stockRepository.findByProductId(productId)
+                .map((existingStock) -> {
+                    existingStock.setAvailableQuantity(request.quantity());
+                    return existingStock;
+                })
+                .orElseGet(() -> stockRepository.save(
+                        Stock.builder()
+                                .productId(productId)
+                                .availableQuantity(request.quantity())
+                                .reservedQuantity(0)
+                                .build()
+                ));
+
+        return stockMapper.toResponse(stock);
 
     }
 
+    @Transactional
     @Override
-    public void updateStock(Long productId, BigDecimal price) {
+    public StockResponse addToStock(Long productId, StockRequest request) {
+
+        var stock = stockRepository.findByProductId(productId)
+                .orElseThrow(() -> new EntryNotFoundException(productId));
+
+        stock.setAvailableQuantity(stock.getAvailableQuantity() + request.quantity());
+
+        return stockMapper.toResponse(stock);
+
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public StockResponse get(Long productId) {
+
+        return stockRepository.findByProductId(productId)
+                .map(stockMapper::toResponse)
+                .orElseThrow(() -> new EntryNotFoundException(productId));
+
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<StockResponse> getSelected(Long[] productIds) {
+
+        return stockMapper.toResponses(stockRepository.findAllById(List.of(productIds)));
 
     }
 

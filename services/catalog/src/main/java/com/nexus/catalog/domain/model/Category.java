@@ -35,10 +35,6 @@ public class Category {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> subCategories = new HashSet<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    private Set<Product> products = new HashSet<>();
-
     private Boolean active = true;
 
 }

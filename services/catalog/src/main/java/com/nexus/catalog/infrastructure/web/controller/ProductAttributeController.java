@@ -1,11 +1,11 @@
 package com.nexus.catalog.infrastructure.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.request.v1.ProductAttributeRequest;
-import com.nexus.catalog.application.dto.web.response.v1.ProductAttributeResponse;
-import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.InboundView;
 import com.nexus.catalog.application.dto.web.OutboundView;
+import com.nexus.catalog.application.dto.web.Validate;
+import com.nexus.catalog.application.dto.web.request.v1.ProductAttributeRequest;
+import com.nexus.catalog.application.dto.web.response.v1.ProductAttributeResponse;
 import com.nexus.catalog.application.service.ProductAttributeService;
 import com.nexus.catalog.infrastructure.web.constants.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +58,8 @@ public class ProductAttributeController {
     @DeleteMapping(ApiConstants.ID)
     @Operation(summary = "openapi.product-attribute.delete.sum", description = "openapi.product-attribute.delete.desc")
     public ResponseEntity<ProductAttributeResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(productAttributeService.delete(id));
+        productAttributeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

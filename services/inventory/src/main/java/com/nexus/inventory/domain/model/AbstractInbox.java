@@ -3,6 +3,7 @@ package com.nexus.inventory.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -39,9 +40,9 @@ public class AbstractInbox {
     @Enumerated(EnumType.STRING)
     protected InboxStatus status = InboxStatus.PENDING;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(updatable = false)
-    protected Instant createdAt = Instant.now();
+    protected Instant createdAt;
 
     protected Instant processedAt;
 

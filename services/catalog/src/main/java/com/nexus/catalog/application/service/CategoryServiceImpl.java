@@ -35,7 +35,8 @@ public class CategoryServiceImpl implements CategoryService {
         var category = categoryMapper.toModel(categoryRequest);
 
         if (categoryRequest.parentId() != null) {
-            var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+            var parentCategory = categoryRepository.findById(categoryRequest.parentId())
+                    .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
             category.setParent(parentCategory);
         }
 
@@ -54,7 +55,8 @@ public class CategoryServiceImpl implements CategoryService {
 
             if (categoryRequest.parentId() != null) {
                 validateHierarchy(category, categoryRequest.parentId());
-                var parentCategory = categoryRepository.findById(categoryRequest.parentId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+                var parentCategory = categoryRepository.findById(categoryRequest.parentId())
+                        .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
                 category.setParent(parentCategory);
             } else {
                 category.setParent(null);
@@ -81,7 +83,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse get(Long categoryId) {
 
-        return categoryRepository.findById(categoryId).map(categoryMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findById(categoryId)
+                .map(categoryMapper::toResponse)
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -89,7 +93,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse get(String categoryName) {
 
-        return categoryRepository.findByName(categoryName).map(categoryMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
+        return categoryRepository.findByName(categoryName)
+                .map(categoryMapper::toResponse)
+                .orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
 
     }
 
@@ -102,7 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Checks if the Category Name or Slug from the request object already exists in the DB
+     * Checks if the Category Name or Slug from the request object already exists in the DB.
      * Throws {@link DuplicateEntryException}
      *
      * @param categoryRequest {@link CategoryRequest} Object with category data
@@ -114,7 +120,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         conflict.forEach(category -> {
 
-            // If the Category ID from request is null (Create) or the Category from DB is not the same one in request (Update)
             if (categoryRequest.id() == null || !category.getId().equals(categoryRequest.id())) {
                 boolean nameMatch = category.getName().equalsIgnoreCase(categoryRequest.name());
                 String field = nameMatch ? NAME : SLUG;
@@ -128,42 +133,29 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Validates {@link Category} parent child relations
+     * Validates {@link Category} parent-child relations before reparenting.
      *
-     * @param category Category Object
-     * @param parentId Parent Category ID
+     * <p>Two invariants must hold:
+     * <ol>
+     *   <li>A category cannot be its own parent.</li>
+     *   <li>A category cannot be reparented to one of its own descendants
+     *       (that would create a cycle).</li>
+     * </ol>
+     *
+     * <p>The CTE in {@link CategoryRepository#existsDescendant} covers both
+     * cases: the recursive walk starts at {@code category.getId()} (which
+     * includes the node itself), so a self-reference and any deeper descendant
+     * are caught in a single round-trip.
+     *
+     * @param category the category being updated
+     * @param parentId the proposed new parent ID
      */
     @NullMarked
     private void validateHierarchy(Category category, Long parentId) {
 
-        // 1. Basic check: I can't be my own parent
-        if (category.getId().equals(parentId)) {
+        if (categoryRepository.existsDescendant(category.getId(), parentId)) {
             throw new InvalidHierarchyException(Category.class.getSimpleName());
         }
-
-        // 2. Recursive check: Is parentId one of my subcategories?
-        if (isDescendant(category, parentId)) {
-            throw new InvalidHierarchyException(Category.class.getSimpleName());
-        }
-
-    }
-
-    /**
-     * Recursive method to check if a provided Parent ID exists as an ID of a child {@link Category}
-     *
-     * @param rootCategory   Root {@link Category} object
-     * @param targetParentId Parent ID
-     * @return {@link boolean}
-     */
-    @NullMarked
-    private boolean isDescendant(Category rootCategory, Long targetParentId) {
-
-        for (Category subCategory : rootCategory.getSubCategories()) {
-            if (subCategory.getId().equals(targetParentId)) return true;
-            if (isDescendant(subCategory, targetParentId)) return true;
-        }
-
-        return false;
 
     }
 

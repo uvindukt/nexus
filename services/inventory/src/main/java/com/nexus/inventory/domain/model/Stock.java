@@ -24,7 +24,7 @@ public class Stock {
     @Column(nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private Long productId;
 
     @Builder.Default

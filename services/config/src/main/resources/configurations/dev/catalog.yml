@@ -16,22 +16,25 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
     stream:
+      source: publish
       bindings:
-        product-out-0:
+        publish-out-0:
           destination: product
           producer:
-            partition-count: 4
+            partition-count: 3
       kafka:
         binder:
           brokers: localhost:29092
           auto-create-topics: true
+          min-partition-count: 3
+          replication-factor: 1
           producer-properties:
             key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://your-auth-server/realms/nexus # Replace with your Actual Auth Server URL
+          issuer-uri: http://your-auth-server/realms/nexus
 eureka:
   client:
     register-with-eureka: true

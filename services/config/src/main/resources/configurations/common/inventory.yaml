@@ -1,5 +1,10 @@
 server:
   port: 8082
+inbox:
+  archive:
+    cron: "0 0 2 * * *"
+    threshold-days: 2
+    batch-size: 1000
 spring:
   threads:
     virtual:
@@ -13,27 +18,27 @@ spring:
     group-configs:
       - group: 'Inventory API'
         paths-to-match: /v1/**
-    api-docs:
-      enabled: true
-      swagger-ui:
-        enabled: true
     open-api:
       info:
-        title: "Nexus Catalog"
+        title: "Nexus Inventory"
         version: "v1"
-  management:
-    endpoints:
-      web:
-        base-path: /actuator # Default, but can be changed to /manage for security obfuscation
-        exposure:
-          include: health, info, metrics, prometheus, loggers
-    endpoint:
-      health:
-        show-details: when_authorized # Only shows DB/Disk details to authenticated users
-        probes:
-          enabled: true # Essential for Kubernetes Liveness/Readiness probes
-      metrics:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, metrics, prometheus, loggers
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
         enabled: true
-    observations:
-      key-values:
-        application: project-nexus # Tags all metrics for easy filtering in Grafana
+    metrics:
+      enabled: true
+  observations:
+    key-values:
+      application: project-nexus

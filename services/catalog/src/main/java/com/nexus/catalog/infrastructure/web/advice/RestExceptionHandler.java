@@ -21,7 +21,7 @@ import java.time.Instant;
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class GlobalExceptionHandler {
+public class RestExceptionHandler {
 
     private final MessageSource messageSource;
 

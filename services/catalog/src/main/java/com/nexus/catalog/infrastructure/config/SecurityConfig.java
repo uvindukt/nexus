@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Typical for Stateless APIs
                 .authorizeHttpRequests(auth -> auth
                         // 1. Permit OpenAPI / Swagger for documentation
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
                         // 2. Permit Actuator health checks (if needed for your Gateway)
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         // 3. Authenticate everything else

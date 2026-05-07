@@ -4,6 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -41,9 +42,9 @@ public abstract class AbstractOutbox {
     @Enumerated(EnumType.STRING)
     protected OutboxStatus status = OutboxStatus.PENDING;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(updatable = false)
-    protected Instant createdAt = Instant.now();
+    protected Instant createdAt;
 
     protected Instant processedAt;
 

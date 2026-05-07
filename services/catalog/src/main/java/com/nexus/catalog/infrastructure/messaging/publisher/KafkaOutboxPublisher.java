@@ -19,6 +19,7 @@ public class KafkaOutboxPublisher implements OutboxPublisher {
     private final StreamBridge streamBridge;
     private final MessagingBindingProperties messagingBindingProperties;
 
+    @Override
     public void publishOutbox(OutboxEnvelope outboxEnvelope, String key) {
 
         Message<OutboxEnvelope> message = MessageBuilder
@@ -26,7 +27,7 @@ public class KafkaOutboxPublisher implements OutboxPublisher {
                 .setHeader(KafkaHeaders.KEY, key)
                 .build();
 
-        streamBridge.send(messagingBindingProperties.getProductOut(), message);
+        streamBridge.send(messagingBindingProperties.getPublish(), message);
 
     }
 

@@ -44,9 +44,10 @@ public interface ProductAttributeService {
      * Retrieves a {@link com.nexus.catalog.domain.model.ProductAttribute} with provided Key
      *
      * @param productAttributeKey Product Attribute Key
+     * @param productId           Product ID
      * @return {@link ProductAttributeResponse} object containing product attribute data
      */
-    ProductAttributeResponse get(String productAttributeKey);
+    ProductAttributeResponse get(String productAttributeKey, Long productId);
 
     /**
      * Retrieves all {@link com.nexus.catalog.domain.model.ProductAttribute} objects

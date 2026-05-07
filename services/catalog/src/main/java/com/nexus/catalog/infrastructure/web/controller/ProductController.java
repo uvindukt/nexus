@@ -58,7 +58,8 @@ public class ProductController {
     @DeleteMapping(ApiConstants.ID)
     @Operation(summary = "openapi.product.delete.sum", description = "openapi.product.delete.desc")
     public ResponseEntity<ProductResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.delete(id));
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping(ApiConstants.ID)

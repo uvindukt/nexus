@@ -55,3 +55,24 @@ CREATE TABLE stock_reservation
     CONSTRAINT pk_stockreservation PRIMARY KEY (id)
 );
 
+-- changeset Uvindu:1778061605290-5
+ALTER TABLE stock
+    ADD CONSTRAINT uq_stock_product_id UNIQUE (product_id);
+
+-- changeset Uvindu:1778061605290-6
+CREATE INDEX idx_stock_reservation_product_status ON stock_reservation (product_id, status);
+CREATE INDEX idx_stock_reservation_order_status ON stock_reservation (order_id, status);
+
+-- changeset Uvindu:1778061605290-7
+CREATE INDEX idx_stock_reservation_expires_at_active
+    ON stock_reservation (expires_at)
+    WHERE status = 'ACTIVE';
+
+-- changeset Uvindu:1778061605290-8
+CREATE INDEX idx_inbox_status_retry ON inbox (status, retry_count);
+CREATE INDEX idx_inbox_aggregate_id ON inbox (aggregate_id);
+CREATE INDEX idx_inbox_status_created_at ON inbox (status, created_at);
+
+-- changeset Uvindu:1778061605290-9
+CREATE INDEX idx_inbox_archive_aggregate_id ON inbox_archive (aggregate_id);
+CREATE INDEX idx_inbox_archive_archived_at ON inbox_archive (archived_at);

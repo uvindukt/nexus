@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
-    final InboxConsumer inboxConsumer;
+    private final InboxConsumer inboxConsumer;
 
     @Bean
     public Consumer<Message<InboxEnvelope>> consume() {

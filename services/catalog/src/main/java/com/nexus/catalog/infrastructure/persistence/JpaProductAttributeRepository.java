@@ -25,7 +25,7 @@ public interface JpaProductAttributeRepository extends JpaRepository<ProductAttr
 
     @Override
     @EntityGraph(attributePaths = {"product"})
-    Optional<ProductAttribute> findByKey(String key);
+    Optional<ProductAttribute> findByKeyAndProduct_Id(String key, Long productId);
 
     @Override
     @EntityGraph(attributePaths = {"product"})

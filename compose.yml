@@ -13,6 +13,7 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       retries: 5
+      start_period: 20s
 
   kafka:
     image: quay.io/debezium/kafka:2.5

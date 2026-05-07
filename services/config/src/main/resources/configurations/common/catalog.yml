@@ -1,13 +1,13 @@
 nexus:
   messaging:
     bindings:
-      product-out: product-out-0
+      publish: publish-out-0
 outbox:
   cron: "0/5 * * * * *"
   batch-size: 30
   max-retries: 5
   archive:
-    cron: "0 0 2 * * *"   # 2am daily
+    cron: "0 0 2 * * *"
     threshold-days: 30
     batch-size: 500
 server:
@@ -25,27 +25,27 @@ spring:
     group-configs:
       - group: 'Catalog API'
         paths-to-match: /v1/**
-    api-docs:
-      enabled: true
-      swagger-ui:
-        enabled: true
     open-api:
       info:
         title: "Nexus Catalog"
         version: "v1"
-  management:
-    endpoints:
-      web:
-        base-path: /actuator # Default, but can be changed to /manage for security obfuscation
-        exposure:
-          include: health, info, metrics, prometheus, loggers
-    endpoint:
-      health:
-        show-details: when_authorized # Only shows DB/Disk details to authenticated users
-        probes:
-          enabled: true # Essential for Kubernetes Liveness/Readiness probes
-      metrics:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, metrics, prometheus, loggers
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
         enabled: true
-    observations:
-      key-values:
-        application: project-nexus # Tags all metrics for easy filtering in Grafana
+    metrics:
+      enabled: true
+  observations:
+    key-values:
+      application: project-nexus

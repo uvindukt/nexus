@@ -61,7 +61,6 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId).map(product -> {
 
             validateUniqueness(productRequest);
-            outboxService.productEvent(product, OutboxEventType.PRODUCT_UPDATED);
             productMapper.updateModel(productRequest, product);
 
             // Changing Brand scenario

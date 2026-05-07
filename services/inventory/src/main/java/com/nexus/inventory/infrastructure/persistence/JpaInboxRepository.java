@@ -13,6 +13,6 @@ import java.util.UUID;
 @Repository
 public interface JpaInboxRepository extends JpaRepository<Inbox, UUID>, InboxRepository {
 
-    List<Inbox> findByStatusAndRetryCountLessThan(InboxStatus status, Integer maxRetries, Pageable pageable);
+    List<Inbox> findByStatus(InboxStatus status, Pageable pageable);
 
 }

@@ -5,15 +5,17 @@ import com.nexus.inventory.domain.model.InboxStatus;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 import java.util.UUID;
 
+@NoRepositoryBean
 public interface InboxRepository extends ListCrudRepository<Inbox, UUID> {
 
     @NullMarked
     boolean existsById(UUID id);
 
-    List<Inbox> findByStatusAndRetryCountLessThan(InboxStatus status, Integer maxRetries, Pageable pageable);
+    List<Inbox> findByStatus(InboxStatus status, Pageable pageable);
 
 }

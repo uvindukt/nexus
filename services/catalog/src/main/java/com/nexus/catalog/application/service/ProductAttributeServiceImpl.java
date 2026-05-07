@@ -93,9 +93,9 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     @Transactional(readOnly = true)
     @Override
-    public ProductAttributeResponse get(String key) {
+    public ProductAttributeResponse get(String key, Long productId) {
 
-        return productAttributeRepository.findByKey(key)
+        return productAttributeRepository.findByKeyAndProduct_Id(key, productId)
                 .map(productAttributeMapper::toResponse)
                 .orElseThrow(() -> new EntryNotFoundException(ProductAttribute.class.getSimpleName()));
 
@@ -118,7 +118,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     @NullMarked
     private void validateUniqueness(ProductAttributeRequest request) {
 
-        productAttributeRepository.findByKey(request.key())
+        productAttributeRepository.findByKeyAndProduct_Id(request.key(), request.productId())
                 .ifPresent(attribute -> {
                             if (request.id() == null || !attribute.getId().equals(request.id())) {
                                 throw new DuplicateEntryException(ProductAttribute.class.getSimpleName(), "Key", request.key());

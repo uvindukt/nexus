@@ -1,11 +1,11 @@
 package com.nexus.catalog.infrastructure.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
-import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
-import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.InboundView;
 import com.nexus.catalog.application.dto.web.OutboundView;
+import com.nexus.catalog.application.dto.web.Validate;
+import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
+import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
 import com.nexus.catalog.application.service.CategoryService;
 import com.nexus.catalog.infrastructure.web.constants.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +58,8 @@ public class CategoryController {
     @DeleteMapping(ApiConstants.ID)
     @Operation(summary = "openapi.category.delete.sum", description = "openapi.category.delete.desc")
     public ResponseEntity<CategoryResponse> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.delete(id));
+        categoryService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
