@@ -2,7 +2,7 @@ package com.nexus.inventory.application.mapper;
 
 import com.nexus.inventory.domain.model.Inbox;
 import com.nexus.inventory.domain.model.InboxArchive;
-import com.nexus.inventory.domain.model.InboxEnvelope;
+import com.nexus.shared.InboxEnvelope;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -18,7 +18,6 @@ public interface InboxMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "type", ignore = true)
     @Mapping(target = "processedAt", ignore = true)
-    @Mapping(target = "lastAttemptedAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     void toInbox(InboxEnvelope inboxEnvelope, @MappingTarget Inbox inbox);
 

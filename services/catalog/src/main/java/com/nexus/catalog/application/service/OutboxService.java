@@ -1,7 +1,7 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.domain.model.Outbox;
-import com.nexus.catalog.domain.model.OutboxEventType;
+import com.nexus.shared.OutboxEventType;
 import com.nexus.catalog.domain.model.Product;
 
 import java.time.Instant;

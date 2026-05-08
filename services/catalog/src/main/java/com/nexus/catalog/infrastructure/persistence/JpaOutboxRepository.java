@@ -1,8 +1,8 @@
 package com.nexus.catalog.infrastructure.persistence;
 
 import com.nexus.catalog.domain.model.Outbox;
-import com.nexus.catalog.domain.model.OutboxStatus;
 import com.nexus.catalog.domain.repository.OutboxRepository;
+import com.nexus.shared.OutboxStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

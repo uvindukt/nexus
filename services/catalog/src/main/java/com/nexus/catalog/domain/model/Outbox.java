@@ -1,5 +1,6 @@
 package com.nexus.catalog.domain.model;
 
+import com.nexus.shared.AbstractOutbox;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;

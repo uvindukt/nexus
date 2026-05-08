@@ -1,5 +1,6 @@
-package com.nexus.inventory.domain.model;
+package com.nexus.shared;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -12,14 +13,15 @@ import java.util.UUID;
 
 @MappedSuperclass
 @SuperBuilder
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AbstractInbox {
+public abstract class AbstractOutbox {
 
+    @Builder.Default
     @Id
-    protected UUID id;
+    protected UUID id = UuidCreator.getTimeOrderedEpoch(); // UUIDv7 for better indexing performance
 
     @Column(nullable = false)
     protected String aggregateType;
@@ -29,7 +31,7 @@ public class AbstractInbox {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    protected InboxEventType type;
+    protected OutboxEventType type;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
@@ -38,7 +40,7 @@ public class AbstractInbox {
     @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    protected InboxStatus status = InboxStatus.PENDING;
+    protected OutboxStatus status = OutboxStatus.PENDING;
 
     @CreationTimestamp
     @Column(updatable = false)

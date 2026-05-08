@@ -1,7 +1,7 @@
 package com.nexus.inventory.domain.port.in;
 
 
-import com.nexus.inventory.domain.model.InboxEnvelope;
+import com.nexus.shared.InboxEnvelope;
 
 public interface InboxConsumer {
 

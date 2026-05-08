@@ -1,6 +1,6 @@
 package com.nexus.catalog.infrastructure.messaging.publisher;
 
-import com.nexus.catalog.domain.model.OutboxEnvelope;
+import com.nexus.shared.OutboxEnvelope;
 import com.nexus.catalog.domain.port.out.OutboxPublisher;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
 import lombok.RequiredArgsConstructor;

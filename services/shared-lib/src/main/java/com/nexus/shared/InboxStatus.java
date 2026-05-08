@@ -1,4 +1,4 @@
-package com.nexus.inventory.domain.model;
+package com.nexus.shared;
 
 public enum InboxStatus {
     PENDING, PROCESSED, FAILED

@@ -7,7 +7,7 @@ import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.model.Brand;
 import com.nexus.catalog.domain.model.Category;
-import com.nexus.catalog.domain.model.OutboxEventType;
+import com.nexus.shared.OutboxEventType;
 import com.nexus.catalog.domain.model.Product;
 import com.nexus.catalog.domain.repository.BrandRepository;
 import com.nexus.catalog.domain.repository.CategoryRepository;

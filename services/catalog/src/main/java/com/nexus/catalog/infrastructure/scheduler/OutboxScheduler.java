@@ -2,9 +2,9 @@ package com.nexus.catalog.infrastructure.scheduler;
 
 import com.nexus.catalog.application.service.OutboxService;
 import com.nexus.catalog.domain.model.Outbox;
-import com.nexus.catalog.domain.model.OutboxStatus;
 import com.nexus.catalog.domain.repository.OutboxRepository;
 import com.nexus.catalog.infrastructure.config.OutboxProperties;
+import com.nexus.shared.OutboxStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

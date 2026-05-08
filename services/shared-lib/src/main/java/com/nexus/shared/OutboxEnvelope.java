@@ -1,6 +1,6 @@
-package com.nexus.inventory.domain.model;
+package com.nexus.shared;
 
-public record InboxEnvelope(
+public record OutboxEnvelope(
         String id,
         String aggregateType,
         String aggregateId,

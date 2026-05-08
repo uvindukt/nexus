@@ -1,4 +1,4 @@
-package com.nexus.catalog.domain.model;
+package com.nexus.shared;
 
 public enum OutboxStatus {
     PENDING, PROCESSED, FAILED
