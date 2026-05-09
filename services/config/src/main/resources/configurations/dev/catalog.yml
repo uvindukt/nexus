@@ -16,9 +16,9 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
     stream:
-      source: publish
+      source: publishProduct
       bindings:
-        publish-out-0:
+        publishProduct-out-0:
           destination: product
           producer:
             partition-count: 3

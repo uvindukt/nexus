@@ -2,10 +2,11 @@ package com.nexus.inventory.application.service;
 
 import com.nexus.inventory.application.dto.web.request.v1.StockRequest;
 import com.nexus.inventory.application.dto.web.response.v1.StockResponse;
-import com.nexus.inventory.application.mapper.StockMapper;
+import com.nexus.inventory.application.mapper.web.StockMapper;
 import com.nexus.inventory.domain.exception.EntryNotFoundException;
 import com.nexus.inventory.domain.model.Stock;
 import com.nexus.inventory.domain.repository.StockRepository;
+import com.nexus.shared.outbox.OutboxEventType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,15 @@ public class StockServiceImpl implements StockService {
 
     private final StockRepository stockRepository;
     private final StockMapper stockMapper;
+    private final OutboxService outboxService;
 
     @Transactional
     @Override
     public StockResponse upsertStock(Long productId, StockRequest request) {
 
-        var stock = stockRepository.findByProductId(productId)
+        Stock stock = stockRepository.findByProductId(productId)
                 .map((existingStock) -> {
+                    // Product has been initialized via catalog service
                     existingStock.setAvailableQuantity(request.quantity());
                     return existingStock;
                 })
@@ -38,6 +41,7 @@ public class StockServiceImpl implements StockService {
                                 .build()
                 ));
 
+        outboxService.stockEvent(stock, OutboxEventType.STOCK_INITIALIZED);
         return stockMapper.toResponse(stock);
 
     }
@@ -46,11 +50,12 @@ public class StockServiceImpl implements StockService {
     @Override
     public StockResponse addToStock(Long productId, StockRequest request) {
 
-        var stock = stockRepository.findByProductId(productId)
+        Stock stock = stockRepository.findByProductId(productId)
                 .orElseThrow(() -> new EntryNotFoundException(productId));
 
         stock.setAvailableQuantity(stock.getAvailableQuantity() + request.quantity());
 
+        outboxService.stockEvent(stock, OutboxEventType.STOCK_UPDATED);
         return stockMapper.toResponse(stock);
 
     }

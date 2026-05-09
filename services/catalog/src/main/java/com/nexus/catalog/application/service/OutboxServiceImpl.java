@@ -6,13 +6,13 @@ import com.nexus.catalog.application.mapper.messaging.OutboxEnvelopeMapper;
 import com.nexus.catalog.application.mapper.messaging.ProductEventMapper;
 import com.nexus.catalog.domain.exception.OutboxPublishException;
 import com.nexus.catalog.domain.model.*;
-import com.nexus.catalog.domain.port.out.OutboxPublisher;
+import com.nexus.catalog.domain.port.out.ProductPublisher;
 import com.nexus.catalog.domain.repository.OutboxArchiveRepository;
 import com.nexus.catalog.domain.repository.OutboxRepository;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.OutboxArchive;
-import com.nexus.shared.OutboxEventType;
-import com.nexus.shared.OutboxStatus;
+import com.nexus.shared.outbox.OutboxEventType;
+import com.nexus.shared.outbox.OutboxStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +30,7 @@ public class OutboxServiceImpl implements OutboxService {
 
     private final OutboxArchiveRepository outboxArchiveRepository;
     private final OutboxRepository outboxRepository;
-    private final OutboxPublisher outboxPublisher;
+    private final ProductPublisher productPublisher;
     private final OutboxEnvelopeMapper outboxEnvelopeMapper;
     private final ProductEventMapper productEventMapper;
     private final ObjectMapper objectMapper;
@@ -62,7 +62,7 @@ public class OutboxServiceImpl implements OutboxService {
     @Override
     public void publishSingle(Outbox outbox) {
 
-        outboxPublisher.publishOutbox(outboxEnvelopeMapper.toEvent(outbox), String.valueOf(outbox.getId()));
+        productPublisher.publishProduct(outboxEnvelopeMapper.toEvent(outbox), String.valueOf(outbox.getId()));
         outbox.setStatus(OutboxStatus.PROCESSED);
         outbox.setProcessedAt(Instant.now());
 

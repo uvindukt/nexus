@@ -1,11 +1,11 @@
 package com.nexus.inventory.application.service;
 
 import com.nexus.inventory.application.dto.web.request.v1.StockRequest;
-import com.nexus.inventory.application.mapper.InboxMapper;
+import com.nexus.inventory.application.mapper.messaging.InboxMapper;
 import com.nexus.inventory.domain.model.Inbox;
-import com.nexus.shared.InboxEnvelope;
-import com.nexus.shared.InboxEventType;
-import com.nexus.shared.InboxStatus;
+import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.inbox.InboxEventType;
+import com.nexus.shared.inbox.InboxStatus;
 import com.nexus.inventory.domain.repository.InboxArchiveRepository;
 import com.nexus.inventory.domain.repository.InboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class InboxServiceImpl implements InboxService {
 
     @Transactional
     @Override
-    public void onStockEvent(InboxEnvelope inboxEnvelope) {
+    public void onProductEvent(InboxEnvelope inboxEnvelope) {
 
         if (idempotencyCheck(inboxEnvelope)) {
             return;

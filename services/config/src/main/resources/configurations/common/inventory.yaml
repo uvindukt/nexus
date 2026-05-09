@@ -5,6 +5,11 @@ inbox:
     cron: "0 0 2 * * *"
     threshold-days: 2
     batch-size: 1000
+outbox:
+  archive:
+    cron: "0 0 2 * * *"
+    threshold-days: 2
+    batch-size: 1000
 spring:
   threads:
     virtual:

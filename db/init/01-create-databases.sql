@@ -1,3 +1,10 @@
+-- Create a separate DB for Keycloak
+SELECT 'CREATE DATABASE keycloak'
+WHERE NOT EXISTS (SELECT
+                  FROM pg_database
+                  WHERE datname = 'keycloak')
+\gexec
+
 -- Create catalog DB for the app (Liquibase will manage its schema)
 SELECT 'CREATE DATABASE catalog'
 WHERE NOT EXISTS (SELECT
@@ -12,9 +19,9 @@ WHERE NOT EXISTS (SELECT
                   WHERE datname = 'inventory')
 \gexec
 
--- Create a separate DB for Keycloak
-SELECT 'CREATE DATABASE keycloak'
+-- Create analytics DB for the app (Liquibase will manage its schema)
+SELECT 'CREATE DATABASE analytics'
 WHERE NOT EXISTS (SELECT
                   FROM pg_database
-                  WHERE datname = 'keycloak')
+                  WHERE datname = 'analytics')
 \gexec

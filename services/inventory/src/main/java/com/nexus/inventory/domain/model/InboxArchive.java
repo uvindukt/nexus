@@ -1,6 +1,6 @@
 package com.nexus.inventory.domain.model;
 
-import com.nexus.shared.AbstractInbox;
+import com.nexus.shared.inbox.AbstractInbox;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.nexus.inventory.infrastructure.config;
 
-import com.nexus.shared.InboxEnvelope;
-import com.nexus.inventory.domain.port.in.InboxConsumer;
+import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.inventory.domain.port.in.ProductConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +13,14 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
-    private final InboxConsumer inboxConsumer;
+    private final ProductConsumer productConsumer;
 
     @Bean
-    public Consumer<Message<InboxEnvelope>> consume() {
+    public Consumer<Message<InboxEnvelope>> consumeProduct() {
 
         return message -> {
             InboxEnvelope inboxEnvelope = message.getPayload();
-            inboxConsumer.consumeInbox(inboxEnvelope);
+            productConsumer.consumeProduct(inboxEnvelope);
         };
 
     }

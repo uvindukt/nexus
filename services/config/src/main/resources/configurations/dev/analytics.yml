@@ -1,0 +1,74 @@
+spring:
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/analytics
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        temp.use_jdbc_metadata_defaults: true
+        jdbc:
+          fetch_size: 50
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  cloud:
+    stream:
+      bindings:
+        consumeProduct-in-0:
+          destination: product
+          group: analytics
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 1000
+            back-off-multiplier: 2.0
+            back-off-max-interval: 10000
+            retryable-exceptions:
+              java.lang.IllegalArgumentException: false
+              java.lang.ClassCastException: false
+        consumeStock-in-0:
+          destination: stock
+          group: analytics
+          consumer:
+            max-attempts: 3
+            back-off-initial-interval: 1000
+            back-off-multiplier: 2.0
+            back-off-max-interval: 10000
+            retryable-exceptions:
+              java.lang.IllegalArgumentException: false
+              java.lang.ClassCastException: false
+      kafka:
+        bindings:
+          consumeProduct-in-0:
+            consumer:
+              enable-dlq: true
+              dlq-name: product.dlq
+          consumeStock-in-0:
+            consumer:
+              enable-dlq: true
+              dlq-name: stock.dlq
+        listener:
+          concurrency: 3
+        binder:
+          brokers: localhost:29092
+          auto-create-topics: true
+          min-partition-count: 3
+          replication-factor: 1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://your-auth-server/realms/nexus
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-admin:discovery-secure-password@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30

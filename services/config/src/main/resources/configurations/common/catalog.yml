@@ -1,7 +1,7 @@
 nexus:
   messaging:
     bindings:
-      publish: publish-out-0
+      publish: publishProduct-out-0
 outbox:
   cron: "0/5 * * * * *"
   batch-size: 30

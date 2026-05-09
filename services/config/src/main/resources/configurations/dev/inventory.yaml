@@ -16,8 +16,13 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
     stream:
+      source: publishStock
       bindings:
-        consume-in-0:
+        publishStock-out-0:
+          destination: stock
+          producer:
+            partition-count: 3
+        consumeProduct-in-0:
           destination: product
           group: inventory
           consumer:
@@ -30,7 +35,7 @@ spring:
               java.lang.ClassCastException: false
       kafka:
         bindings:
-          consume-in-0:
+          consumeProduct-in-0:
             consumer:
               enable-dlq: true
               dlq-name: product.dlq
@@ -41,6 +46,8 @@ spring:
           auto-create-topics: true
           min-partition-count: 3
           replication-factor: 1
+          producer-properties:
+            key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:
       resourceserver:

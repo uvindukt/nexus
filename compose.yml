@@ -68,3 +68,32 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+  debezium-init:
+    image: curlimages/curl:latest
+    depends_on:
+      connect:
+        condition: service_started
+    restart: on-failure
+    command: |
+      curl -X POST http://connect:8083/connectors \
+        -H "Content-Type: application/json" \
+        -d '{
+          "name": "inventory-outbox-connector",
+          "config": {
+            "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+            "database.hostname": "postgres",
+            "database.port": "5432",
+            "database.user": "postgres",
+            "database.password": "postgres",
+            "database.dbname": "inventory",
+            "database.server.name": "inventory",
+            "table.include.list": "public.outbox",
+            "transforms": "outbox",
+            "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+            "transforms.outbox.table.field.event.type": "event_type",
+            "transforms.outbox.table.field.event.key": "aggregate_id",
+            "transforms.outbox.route.by.field": "aggregate_type",
+            "transforms.outbox.route.topic.replacement": "nexus.inventory.${routedByValue}"
+          }
+        }'

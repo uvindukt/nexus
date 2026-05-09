@@ -1,7 +1,7 @@
 package com.nexus.inventory.domain.repository;
 
 import com.nexus.inventory.domain.model.Inbox;
-import com.nexus.shared.InboxStatus;
+import com.nexus.shared.inbox.InboxStatus;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
