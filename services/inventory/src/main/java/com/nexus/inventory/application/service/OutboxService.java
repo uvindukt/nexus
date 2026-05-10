@@ -15,13 +15,4 @@ public interface OutboxService {
      */
     void stockEvent(Stock stock, OutboxEventType eventType);
 
-    /**
-     * Archives processed outbox records older than the threshold.
-     *
-     * @param threshold the cutoff time for archiving
-     * @param limit the maximum number of records to archive in one batch
-     * @return the number of records archived
-     */
-    Integer archive(Instant threshold, Integer limit);
-
 }

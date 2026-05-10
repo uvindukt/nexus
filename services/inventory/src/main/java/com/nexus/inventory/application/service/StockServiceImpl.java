@@ -5,8 +5,8 @@ import com.nexus.inventory.application.dto.web.response.v1.StockResponse;
 import com.nexus.inventory.application.mapper.web.StockMapper;
 import com.nexus.inventory.domain.exception.EntryNotFoundException;
 import com.nexus.inventory.domain.model.Stock;
+import com.nexus.inventory.domain.model.StockEventType;
 import com.nexus.inventory.domain.repository.StockRepository;
-import com.nexus.shared.outbox.OutboxEventType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class StockServiceImpl implements StockService {
                                 .build()
                 ));
 
-        outboxService.stockEvent(stock, OutboxEventType.STOCK_INITIALIZED);
+        outboxService.stockEvent(stock, StockEventType.STOCK_INITIALIZED);
         return stockMapper.toResponse(stock);
 
     }
@@ -55,7 +55,7 @@ public class StockServiceImpl implements StockService {
 
         stock.setAvailableQuantity(stock.getAvailableQuantity() + request.quantity());
 
-        outboxService.stockEvent(stock, OutboxEventType.STOCK_UPDATED);
+        outboxService.stockEvent(stock, StockEventType.STOCK_UPDATED);
         return stockMapper.toResponse(stock);
 
     }

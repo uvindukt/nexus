@@ -30,8 +30,7 @@ public abstract class AbstractOutbox {
     protected String aggregateId;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    protected OutboxEventType type;
+    protected String type;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "jsonb")
@@ -47,5 +46,9 @@ public abstract class AbstractOutbox {
     protected Instant createdAt;
 
     protected Instant processedAt;
+
+    public void setType(OutboxEventType outboxEventType) {
+        this.type = outboxEventType.name();
+    }
 
 }

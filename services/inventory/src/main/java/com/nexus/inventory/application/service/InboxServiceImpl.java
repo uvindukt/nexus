@@ -3,11 +3,11 @@ package com.nexus.inventory.application.service;
 import com.nexus.inventory.application.dto.web.request.v1.StockRequest;
 import com.nexus.inventory.application.mapper.messaging.InboxMapper;
 import com.nexus.inventory.domain.model.Inbox;
-import com.nexus.shared.inbox.InboxEnvelope;
-import com.nexus.shared.inbox.InboxEventType;
-import com.nexus.shared.inbox.InboxStatus;
+import com.nexus.inventory.domain.model.ProductEventType;
 import com.nexus.inventory.domain.repository.InboxArchiveRepository;
 import com.nexus.inventory.domain.repository.InboxRepository;
+import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.inbox.InboxStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +36,7 @@ public class InboxServiceImpl implements InboxService {
             return;
         }
 
-        if (InboxEventType.valueOf(inboxEnvelope.type()) == InboxEventType.PRODUCT_CREATED) {
+        if (ProductEventType.valueOf(inboxEnvelope.type()) == ProductEventType.PRODUCT_CREATED) {
             stockService.upsertStock(Long.valueOf(inboxEnvelope.aggregateId()), new StockRequest(Long.valueOf(inboxEnvelope.aggregateId()), 0));
         } else {
             log.info("Ignored unknown event Type - {}, ID - {}", inboxEnvelope.type(), inboxEnvelope.id());
@@ -45,7 +45,7 @@ public class InboxServiceImpl implements InboxService {
         // Saving to Inbox for future idempotency checks
         Inbox inbox = Inbox.builder()
                 .id(UUID.fromString(inboxEnvelope.id()))
-                .type(InboxEventType.valueOf(inboxEnvelope.type()))
+                .type(inboxEnvelope.type())
                 .processedAt(Instant.now())
                 .lastAttemptedAt(Instant.now())
                 .status(InboxStatus.PROCESSED)

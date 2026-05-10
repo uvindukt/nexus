@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexus.catalog.application.mapper.messaging.OutboxEnvelopeMapper;
 import com.nexus.catalog.application.mapper.messaging.ProductEventMapper;
 import com.nexus.catalog.domain.exception.OutboxPublishException;
-import com.nexus.catalog.domain.model.*;
+import com.nexus.catalog.domain.model.Outbox;
+import com.nexus.catalog.domain.model.OutboxArchive;
+import com.nexus.catalog.domain.model.Product;
 import com.nexus.catalog.domain.port.out.ProductPublisher;
 import com.nexus.catalog.domain.repository.OutboxArchiveRepository;
 import com.nexus.catalog.domain.repository.OutboxRepository;
-import com.nexus.catalog.domain.model.Outbox;
-import com.nexus.catalog.domain.model.OutboxArchive;
 import com.nexus.shared.outbox.OutboxEventType;
 import com.nexus.shared.outbox.OutboxStatus;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class OutboxServiceImpl implements OutboxService {
         }
 
         Outbox outbox = Outbox.builder()
-                .type(outboxEventType)
+                .type(outboxEventType.name())
                 .aggregateType(Product.class.getSimpleName())
                 .aggregateId(String.valueOf(product.getId()))
                 .payload(payload)

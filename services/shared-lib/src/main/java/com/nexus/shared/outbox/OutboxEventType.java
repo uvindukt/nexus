@@ -1,17 +1,5 @@
 package com.nexus.shared.outbox;
 
-public enum OutboxEventType {
-    PRODUCT_CREATED,
-    PRODUCT_UPDATED,
-    PRODUCT_DELETED,
-    PRODUCT_ACTIVATED,
-    BRAND_CREATED,
-    BRAND_UPDATED,
-    BRAND_DELETED,
-    CATEGORY_CREATED,
-    CATEGORY_UPDATED,
-    CATEGORY_DELETED,
-    STOCK_INITIALIZED,
-    STOCK_UPDATED,
-    STOCK_RESERVED
+public interface OutboxEventType {
+    String name();
 }
