@@ -19,7 +19,7 @@ spring:
       source: publishProduct
       bindings:
         publishProduct-out-0:
-          destination: product
+          destination: nexus.catalog.Product
           producer:
             partition-count: 3
       kafka:
@@ -29,6 +29,9 @@ spring:
           min-partition-count: 3
           replication-factor: 1
           producer-properties:
+            acks: all
+            retries: 3
+            enable.idempotence: true
             key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:

@@ -26,11 +26,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OutboxServiceImpl implements OutboxService {
 
-    private OutboxRepository outboxRepository;
-    private OutboxArchiveRepository outboxArchiveRepository;
-    private OutboxMapper outboxMapper;
-    private ObjectMapper objectMapper;
-    private StockEventMapper stockEventMapper;
+    private final OutboxRepository outboxRepository;
+    private final OutboxArchiveRepository outboxArchiveRepository;
+    private final OutboxMapper outboxMapper;
+    private final ObjectMapper objectMapper;
+    private final StockEventMapper stockEventMapper;
 
     @Override
     public void stockEvent(Stock stock, OutboxEventType eventType) {
