@@ -1,9 +1,7 @@
 package com.nexus.inventory.application.service;
 
 import com.nexus.inventory.domain.model.Stock;
-import com.nexus.shared.outbox.OutboxEventType;
-
-import java.time.Instant;
+import com.nexus.shared.common.OutboxEventType;
 
 public interface OutboxService {
     

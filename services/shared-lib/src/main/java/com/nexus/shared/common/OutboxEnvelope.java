@@ -1,6 +1,6 @@
-package com.nexus.shared.inbox;
+package com.nexus.shared.common;
 
-public record InboxEnvelope(
+public record OutboxEnvelope(
         String id,
         String aggregateType,
         String aggregateId,

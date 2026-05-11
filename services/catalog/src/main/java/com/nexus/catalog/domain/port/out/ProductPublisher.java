@@ -1,6 +1,6 @@
 package com.nexus.catalog.domain.port.out;
 
-import com.nexus.shared.outbox.OutboxEnvelope;
+import com.nexus.shared.common.OutboxEnvelope;
 
 /**
  * Port interface for publishing product events.

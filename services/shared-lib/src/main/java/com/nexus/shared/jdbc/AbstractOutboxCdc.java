@@ -1,6 +1,10 @@
-package com.nexus.shared.inbox;
+package com.nexus.shared.jdbc;
 
-import jakarta.persistence.*;
+import com.github.f4b6a3.uuid.UuidCreator;
+import com.nexus.shared.common.OutboxEventType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,14 +16,15 @@ import java.util.UUID;
 
 @MappedSuperclass
 @SuperBuilder
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AbstractInbox {
+public abstract class AbstractOutboxCdc {
 
+    @Builder.Default
     @Id
-    protected UUID id;
+    protected UUID id = UuidCreator.getTimeOrderedEpoch(); // UUIDv7 for better indexing performance
 
     @Column(nullable = false)
     protected String aggregateType;
@@ -34,19 +39,12 @@ public class AbstractInbox {
     @Column(nullable = false, columnDefinition = "jsonb")
     protected String payload;
 
-    @Builder.Default
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    protected InboxStatus status = InboxStatus.PENDING;
-
     @CreationTimestamp
     @Column(updatable = false)
     protected Instant createdAt;
 
-    protected Instant processedAt;
-
-    public void setType(InboxEventType inboxEventType) {
-        this.type = inboxEventType.name();
+    public void setType(OutboxEventType outboxEventType) {
+        this.type = outboxEventType.name();
     }
 
 }

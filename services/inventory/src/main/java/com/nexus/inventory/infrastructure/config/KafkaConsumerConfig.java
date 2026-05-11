@@ -1,6 +1,6 @@
 package com.nexus.inventory.infrastructure.config;
 
-import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.common.InboxEnvelope;
 import com.nexus.inventory.domain.port.in.ProductConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package com.nexus.inventory.domain.model;
 
-import com.nexus.shared.outbox.AbstractOutboxCdc;
+import com.nexus.shared.jdbc.AbstractOutboxCdc;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;

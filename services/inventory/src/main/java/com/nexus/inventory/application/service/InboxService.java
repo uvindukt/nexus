@@ -1,6 +1,6 @@
 package com.nexus.inventory.application.service;
 
-import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.common.InboxEnvelope;
 
 public interface InboxService {
 

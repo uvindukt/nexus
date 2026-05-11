@@ -2,7 +2,7 @@ package com.nexus.catalog.infrastructure.messaging.publisher;
 
 import com.nexus.catalog.domain.port.out.ProductPublisher;
 import com.nexus.catalog.infrastructure.config.MessagingBindingProperties;
-import com.nexus.shared.outbox.OutboxEnvelope;
+import com.nexus.shared.common.OutboxEnvelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;

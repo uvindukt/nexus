@@ -2,7 +2,7 @@ package com.nexus.inventory.application.mapper.messaging;
 
 import com.nexus.inventory.domain.model.Inbox;
 import com.nexus.inventory.domain.model.InboxArchive;
-import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.common.InboxEnvelope;
 import org.mapstruct.*;
 
 import java.util.List;

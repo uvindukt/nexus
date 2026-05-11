@@ -7,7 +7,7 @@ import com.nexus.inventory.domain.exception.OutboxPersistException;
 import com.nexus.inventory.domain.model.Outbox;
 import com.nexus.inventory.domain.model.Stock;
 import com.nexus.inventory.domain.repository.OutboxRepository;
-import com.nexus.shared.outbox.OutboxEventType;
+import com.nexus.shared.common.OutboxEventType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.nexus.catalog.application.mapper.messaging;
 
-import com.nexus.shared.outbox.OutboxEnvelope;
+import com.nexus.shared.common.OutboxEnvelope;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.OutboxArchive;
 import org.mapstruct.Mapper;

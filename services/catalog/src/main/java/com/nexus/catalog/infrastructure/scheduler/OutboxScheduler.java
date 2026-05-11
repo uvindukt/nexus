@@ -4,7 +4,7 @@ import com.nexus.catalog.application.service.OutboxService;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.repository.OutboxRepository;
 import com.nexus.catalog.infrastructure.config.OutboxProperties;
-import com.nexus.shared.outbox.OutboxStatus;
+import com.nexus.shared.common.OutboxStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

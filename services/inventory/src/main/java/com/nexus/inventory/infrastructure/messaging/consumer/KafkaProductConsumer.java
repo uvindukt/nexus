@@ -1,7 +1,7 @@
 package com.nexus.inventory.infrastructure.messaging.consumer;
 
 import com.nexus.inventory.application.service.InboxService;
-import com.nexus.shared.inbox.InboxEnvelope;
+import com.nexus.shared.common.InboxEnvelope;
 import com.nexus.inventory.domain.port.in.ProductConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

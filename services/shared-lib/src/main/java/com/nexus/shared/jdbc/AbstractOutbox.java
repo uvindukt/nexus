@@ -1,6 +1,8 @@
-package com.nexus.shared.outbox;
+package com.nexus.shared.jdbc;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.nexus.shared.common.OutboxEventType;
+import com.nexus.shared.common.OutboxStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

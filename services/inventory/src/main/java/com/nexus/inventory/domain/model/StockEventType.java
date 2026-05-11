@@ -1,6 +1,6 @@
 package com.nexus.inventory.domain.model;
 
-import com.nexus.shared.outbox.OutboxEventType;
+import com.nexus.shared.common.OutboxEventType;
 
 public enum StockEventType implements OutboxEventType {
     STOCK_INITIALIZED,

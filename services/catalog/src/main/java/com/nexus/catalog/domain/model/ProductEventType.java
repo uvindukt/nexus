@@ -1,6 +1,6 @@
 package com.nexus.catalog.domain.model;
 
-import com.nexus.shared.outbox.OutboxEventType;
+import com.nexus.shared.common.OutboxEventType;
 
 public enum ProductEventType implements OutboxEventType {
     PRODUCT_CREATED,

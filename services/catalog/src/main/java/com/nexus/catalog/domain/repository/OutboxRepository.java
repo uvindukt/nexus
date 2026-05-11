@@ -1,7 +1,7 @@
 package com.nexus.catalog.domain.repository;
 
 import com.nexus.catalog.domain.model.Outbox;
-import com.nexus.shared.outbox.OutboxStatus;
+import com.nexus.shared.common.OutboxStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
