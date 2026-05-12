@@ -12,4 +12,9 @@ public class InsufficientStockException extends RuntimeException {
         this.args = args;
     }
 
+    public InsufficientStockException(Throwable cause, Object... args) {
+        super("stock.insufficient.exception", cause);
+        this.args = args;
+    }
+
 }

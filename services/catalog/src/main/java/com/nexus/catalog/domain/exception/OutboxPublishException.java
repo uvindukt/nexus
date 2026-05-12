@@ -13,4 +13,9 @@ public class OutboxPublishException extends RuntimeException {
         this.args = args;
     }
 
+    public OutboxPublishException(Throwable cause, Object... args) {
+        super("exception.failed.outbox", cause);
+        this.args = args;
+    }
+
 }

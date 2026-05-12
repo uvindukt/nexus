@@ -1,4 +1,4 @@
-package com.nexus.catalog.domain.exception;
+package com.nexus.analytics.domain.exception;
 
 import lombok.Getter;
 
@@ -6,6 +6,7 @@ import lombok.Getter;
 public class EntryNotFoundException extends RuntimeException {
 
     private final Object[] args;
+
 
     public EntryNotFoundException(Object... args) {
         super("exception.entry.not-found");

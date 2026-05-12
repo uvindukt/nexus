@@ -11,4 +11,10 @@ public class DuplicateMessageException extends RuntimeException {
         super("duplicate.message.exception");
         this.args = args;
     }
+
+    public DuplicateMessageException(Throwable cause, Object... args) {
+        super("duplicate.message.exception", cause);
+        this.args = args;
+    }
+
 }

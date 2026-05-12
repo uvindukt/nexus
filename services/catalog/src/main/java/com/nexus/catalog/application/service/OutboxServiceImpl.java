@@ -44,7 +44,7 @@ public class OutboxServiceImpl implements OutboxService {
         try {
             payload = objectMapper.writeValueAsString(productEventMapper.toEvent(product));
         } catch (JsonProcessingException e) {
-            throw new OutboxPublishException(product.getId(), e);
+            throw new OutboxPublishException(e, product.getId());
         }
 
         Outbox outbox = Outbox.builder()

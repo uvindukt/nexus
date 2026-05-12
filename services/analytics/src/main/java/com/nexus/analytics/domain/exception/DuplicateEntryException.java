@@ -1,4 +1,4 @@
-package com.nexus.catalog.domain.exception;
+package com.nexus.analytics.domain.exception;
 
 import lombok.Getter;
 

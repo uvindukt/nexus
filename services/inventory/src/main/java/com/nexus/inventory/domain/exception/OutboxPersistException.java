@@ -12,4 +12,9 @@ public class OutboxPersistException extends RuntimeException {
         this.args = args;
     }
 
+    public OutboxPersistException(Throwable cause, Object... args) {
+        super("exception.outbox.persist", cause);
+        this.args = args;
+    }
+
 }

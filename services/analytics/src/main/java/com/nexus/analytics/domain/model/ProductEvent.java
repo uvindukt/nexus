@@ -1,4 +1,4 @@
-package com.nexus.catalog.domain.model;
+package com.nexus.analytics.domain.model;
 
 import java.math.BigDecimal;
 

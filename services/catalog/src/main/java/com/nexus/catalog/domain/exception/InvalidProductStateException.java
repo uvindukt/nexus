@@ -11,4 +11,10 @@ public class InvalidProductStateException extends RuntimeException {
         super("exception.invalid.product-state");
         this.errorCode = errorCode;
     }
+
+    public InvalidProductStateException(Throwable cause, ProductErrorCode errorCode) {
+        super("exception.invalid.product-state", cause);
+        this.errorCode = errorCode;
+    }
+
 }

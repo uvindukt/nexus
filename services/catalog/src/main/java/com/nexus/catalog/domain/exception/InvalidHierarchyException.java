@@ -12,4 +12,9 @@ public class InvalidHierarchyException extends RuntimeException {
         this.args = args;
     }
 
+    public InvalidHierarchyException(Throwable cause, Object... args) {
+        super("exception.invalid.hierarchy", cause);
+        this.args = args;
+    }
+
 }
