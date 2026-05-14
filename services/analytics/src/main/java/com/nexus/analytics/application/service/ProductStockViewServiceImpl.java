@@ -2,6 +2,7 @@ package com.nexus.analytics.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
+import com.nexus.analytics.application.mapper.ProductStockViewMapper;
 import com.nexus.analytics.domain.exception.EntryNotFoundException;
 import com.nexus.analytics.domain.model.ProductEvent;
 import com.nexus.analytics.domain.model.ProductStockView;
@@ -22,14 +23,28 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
 
     private final ProductStockViewRepository productStockViewRepository;
     private final ObjectMapper objectMapper;
+    private final ProductStockViewMapper productStockViewMapper;
+    private final AnalyticsBroadcaster analyticsBroadcaster;
 
     @Override
-    public Flux<ProductStockViewResponse> streamProductStockChanges(String productId) {
-        return null;
+    public Flux<ProductStockViewResponse> streamActiveStockChanges() {
+
+        return analyticsBroadcaster.getSseFlux()
+                .handle((json, sink) -> {
+                    try {
+                        // Filter out keep-alive pings if they are just strings
+                        if (!json.startsWith("{")) return;
+                        sink.next(objectMapper.readValue(json, ProductStockViewResponse.class));
+                    } catch (Exception e) {
+                        log.error("SSE Mapping error", e);
+                    }
+                })
+                .cast(ProductStockViewResponse.class);
+
     }
 
     @Override
-    public Mono<Void> handleProductCreated(String payload) {
+    public Mono<ProductStockViewResponse> handleProductCreated(String payload) {
         return Mono.fromCallable(() -> objectMapper.readValue(payload, ProductEvent.class))
                 .flatMap(event -> {
                     ProductStockView view = new ProductStockView();
@@ -37,22 +52,22 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
                     setProductView(event, view);
                     return productStockViewRepository.save(view);
                 })
-                .then();
+                .map(productStockViewMapper::toResponse);
     }
 
     @Override
-    public Mono<Void> handleProductUpdated(String payload) {
+    public Mono<ProductStockViewResponse> handleProductUpdated(String payload) {
         return Mono.fromCallable(() -> objectMapper.readValue(payload, ProductEvent.class))
                 .flatMap(event -> productStockViewRepository.findById(event.id())
-                        .doOnNext(view -> setProductView(event, view))
-                        .flatMap(productStockViewRepository::save)
-                        .switchIfEmpty(Mono.error(new EntryNotFoundException(event.id())))
+                                .doOnNext(view -> setProductView(event, view))
+                                .flatMap(productStockViewRepository::save)
+//                        .switchIfEmpty(Mono.error(new EntryNotFoundException(event.id())))
                 )
-                .then();
+                .map(productStockViewMapper::toResponse);
     }
 
     @Override
-    public Mono<Void> handleStockUpsert(String payload) {
+    public Mono<ProductStockViewResponse> handleStockUpsert(String payload) {
         return Mono.fromCallable(() -> objectMapper.readValue(payload, StockEvent.class))
                 .flatMap(event -> productStockViewRepository.findById(event.id())
                         .doOnNext(view -> {
@@ -64,7 +79,7 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
                         .flatMap(productStockViewRepository::save)
                         .switchIfEmpty(Mono.error(new EntryNotFoundException(event.id())))
                 )
-                .then();
+                .map(productStockViewMapper::toResponse);
     }
 
     /**

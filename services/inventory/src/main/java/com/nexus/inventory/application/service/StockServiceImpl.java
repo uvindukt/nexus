@@ -28,7 +28,7 @@ public class StockServiceImpl implements StockService {
     public StockResponse upsertStock(Long productId, StockRequest request) {
 
         Stock stock = stockRepository.findByProductId(productId)
-                .map((existingStock) -> {
+                .map(existingStock -> {
                     // Product has been initialized via catalog service
                     existingStock.setAvailableQuantity(request.quantity());
                     return existingStock;

@@ -2,6 +2,7 @@ package com.nexus.shared.reactive;
 
 import com.nexus.shared.common.InboxEventType;
 import com.nexus.shared.common.InboxStatus;
+import io.r2dbc.postgresql.codec.Json;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -29,7 +30,7 @@ public class AbstractInboxReactive {
     protected String type;
 
     @Column("payload")
-    protected String payload;
+    protected Json payload;
 
     @Column("status")
     protected String status;
@@ -40,7 +41,7 @@ public class AbstractInboxReactive {
     @Column("processed_at")
     protected Instant processedAt;
 
-    protected static <T extends AbstractInboxReactive> T create(Supplier<T> constructor, UUID id, String aggregateType, String aggregateId, String type, String payload) {
+    protected static <T extends AbstractInboxReactive> T create(Supplier<T> constructor, UUID id, String aggregateType, String aggregateId, String type, Json payload) {
         T instance = constructor.get();
         instance.id = id;
         instance.aggregateType = aggregateType;

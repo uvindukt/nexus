@@ -15,6 +15,8 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
+    function:
+      definition: consumeProduct
     stream:
       bindings:
         consumeProduct-in-0:
@@ -34,7 +36,7 @@ spring:
           consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: nexus.catalog.Product.dlq
+              dlq-name: inventory.nexus.catalog.Product.dlq
         listener:
           concurrency: 3
         binder:

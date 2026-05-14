@@ -13,13 +13,21 @@ spring:
     url: jdbc:postgresql://localhost:5432/analytics
     user: postgres
     password: postgres
+    enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
   cloud:
+    function:
+      definition: consumeProduct;consumeStock
     stream:
       bindings:
         consumeProduct-in-0:
-          destination: product
+          destination: nexus.catalog.Product
           group: analytics
           consumer:
+            start-offset: earliest
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-multiplier: 2.0
@@ -28,9 +36,10 @@ spring:
               java.lang.IllegalArgumentException: false
               java.lang.ClassCastException: false
         consumeStock-in-0:
-          destination: stock
+          destination: nexus.inventory.Stock
           group: analytics
           consumer:
+            start-offset: earliest
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-multiplier: 2.0
@@ -43,11 +52,11 @@ spring:
           consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: product.dlq
+              dlq-name: analytics.nexus.catalog.Product.dlq
           consumeStock-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: stock.dlq
+              dlq-name: analytics.nexus.inventory.Stock.dlq
         listener:
           concurrency: 3
         binder:

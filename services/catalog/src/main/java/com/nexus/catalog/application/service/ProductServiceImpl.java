@@ -64,13 +64,13 @@ public class ProductServiceImpl implements ProductService {
             productMapper.updateModel(productRequest, product);
 
             // Changing Brand scenario
-            if (product.getBrand() != null && !product.getBrand().getId().equals(productRequest.brandId())) {
+            if (productRequest.brandId() != null && product.getBrand() != null && !product.getBrand().getId().equals(productRequest.brandId())) {
                 Brand brand = brandRepository.findById(productRequest.brandId()).orElseThrow(() -> new EntryNotFoundException(Brand.class.getSimpleName()));
                 product.setBrand(brand);
             }
 
             // Changing Category scenario
-            if (product.getCategory() != null && !product.getCategory().getId().equals(productRequest.categoryId())) {
+            if (productRequest.categoryId() != null && product.getCategory() != null && !product.getCategory().getId().equals(productRequest.categoryId())) {
                 Category category = categoryRepository.findById(productRequest.categoryId()).orElseThrow(() -> new EntryNotFoundException(Category.class.getSimpleName()));
                 product.setCategory(category);
             }

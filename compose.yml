@@ -83,5 +83,19 @@ services:
       -H "Content-Type: application/json"
       -d @/home/curl_user/connector.json
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
 volumes:
   db_data:
+  redis_data:
