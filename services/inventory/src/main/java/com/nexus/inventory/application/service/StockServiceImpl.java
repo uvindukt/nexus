@@ -41,7 +41,7 @@ public class StockServiceImpl implements StockService {
                                 .build()
                 ));
 
-        outboxService.stockEvent(stock, StockEventType.STOCK_INITIALIZED);
+        outboxService.stockEvent(stock, StockEventType.STOCK_CREATED);
         return stockMapper.toResponse(stock);
 
     }

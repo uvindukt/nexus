@@ -2,7 +2,7 @@ spring:
   datasource:
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5432/catalog
+    url: jdbc:postgresql://localhost:5432/analytics
   jpa:
     hibernate:
       ddl-auto: validate
@@ -24,7 +24,7 @@ spring:
     stream:
       bindings:
         consumeProduct-in-0:
-          destination: nexus.catalog.Product
+          destination: catalog.public.outbox
           group: analytics
           consumer:
             start-offset: earliest
@@ -36,7 +36,7 @@ spring:
               java.lang.IllegalArgumentException: false
               java.lang.ClassCastException: false
         consumeStock-in-0:
-          destination: nexus.inventory.Stock
+          destination: inventory.public.outbox
           group: analytics
           consumer:
             start-offset: earliest
@@ -52,11 +52,11 @@ spring:
           consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: analytics.nexus.catalog.Product.dlq
+              dlq-name: analytics.catalog.outbox.dlq
           consumeStock-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: analytics.nexus.inventory.Stock.dlq
+              dlq-name: analytics.inventory.outbox.dlq
         listener:
           concurrency: 3
         binder:

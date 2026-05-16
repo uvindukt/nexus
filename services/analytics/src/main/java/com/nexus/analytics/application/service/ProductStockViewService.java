@@ -1,6 +1,7 @@
 package com.nexus.analytics.application.service;
 
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
+import com.nexus.analytics.domain.exception.AnalyticsServiceException;
 import com.nexus.analytics.domain.model.ProductEventType;
 import com.nexus.analytics.domain.model.StockEventType;
 
@@ -12,8 +13,9 @@ public interface ProductStockViewService {
      * @param payload   The JSON payload containing product data.
      * @param eventType The type of product event.
      * @return The updated product stock view response.
+     * @throws AnalyticsServiceException If an error occurs during JSON processing or persistence.
      */
-    ProductStockViewResponse upsertProductEvent(String payload, ProductEventType eventType);
+    ProductStockViewResponse upsertProductEvent(String payload, ProductEventType eventType) throws AnalyticsServiceException;
 
     /**
      * Processes and updates stock information based on the incoming event.
@@ -21,7 +23,8 @@ public interface ProductStockViewService {
      * @param payload   The JSON payload containing stock data.
      * @param eventType The type of stock event.
      * @return The updated product stock view response.
+     * @throws AnalyticsServiceException If an error occurs during JSON processing or persistence.
      */
-    ProductStockViewResponse upsertStockEvent(String payload, StockEventType eventType);
+    ProductStockViewResponse upsertStockEvent(String payload, StockEventType eventType) throws AnalyticsServiceException;
 
 }

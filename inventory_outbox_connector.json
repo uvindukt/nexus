@@ -2,7 +2,7 @@
   "name": "inventory_outbox_connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-    "topic.prefix": "nexus",
+    "topic.prefix": "inventory",
     "database.hostname": "postgres",
     "database.port": "5432",
     "database.user": "postgres",
@@ -20,7 +20,6 @@
     "transforms.unwrap.delete.handling.mode": "drop",
 
     "transforms.filterFields.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
-    "transforms.filterFields.include": "id,aggregate_type,aggregate_id,type,payload",
-    "transforms.outbox.route.topic.replacement": "nexus.inventory.${routedByValue}"
+    "transforms.filterFields.include": "id,aggregate_type,aggregate_id,type,payload"
   }
 }

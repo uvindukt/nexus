@@ -3,6 +3,7 @@ package com.nexus.analytics.application.service;
 import com.nexus.analytics.application.dto.web.event.v1.ProductStockViewEvent;
 import com.nexus.analytics.application.dto.web.event.v1.SseEnvelope;
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
+import com.nexus.analytics.domain.exception.AnalyticsServiceException;
 import com.nexus.analytics.domain.model.Inbox;
 import com.nexus.analytics.domain.model.ProductEventType;
 import com.nexus.analytics.domain.model.StockEventType;
@@ -78,8 +79,9 @@ public class InboxServiceImpl implements InboxService {
 
         try {
             response = processor.apply(envelope.payload());
-        } catch (RuntimeException e) {
+        } catch (AnalyticsServiceException e) {
             inboxAuditService.saveAsFailed(inbox);
+            log.error("Error processing InboxEvent - ID: {}", envelope.id(), e);
             throw e;
         }
 

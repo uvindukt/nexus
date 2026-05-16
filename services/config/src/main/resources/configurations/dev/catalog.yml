@@ -19,7 +19,7 @@ spring:
       source: publishProduct
       bindings:
         publishProduct-out-0:
-          destination: nexus.catalog.Product
+          destination: catalog.public.outbox
           producer:
             partition-count: 3
       kafka:

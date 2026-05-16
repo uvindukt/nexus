@@ -16,17 +16,22 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
     stream:
-      source: publish
+      source: publishProduct
       bindings:
-        publish-out-0:
-          destination: product
+        publishProduct-out-0:
+          destination: catalog.public.outbox
           producer:
             partition-count: 3
       kafka:
         binder:
           brokers: localhost:29092
           auto-create-topics: true
+          min-partition-count: 3
+          replication-factor: 1
           producer-properties:
+            acks: all
+            retries: 3
+            enable.idempotence: true
             key.serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:

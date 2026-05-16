@@ -15,12 +15,15 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   cloud:
+    function:
+      definition: consumeProduct
     stream:
       bindings:
-        consume-in-0:
-          destination: product
+        consumeProduct-in-0:
+          destination: catalog.public.outbox
           group: inventory
           consumer:
+            start-offset: earliest
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-multiplier: 2.0
@@ -30,15 +33,17 @@ spring:
               java.lang.ClassCastException: false
       kafka:
         bindings:
-          consume-in-0:
+          consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: product.dlq
+              dlq-name: inventory.catalog.outbox.dlq
         listener:
           concurrency: 3
         binder:
           brokers: localhost:29092
           auto-create-topics: true
+          min-partition-count: 3
+          replication-factor: 1
   security:
     oauth2:
       resourceserver:

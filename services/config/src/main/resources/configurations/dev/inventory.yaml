@@ -20,7 +20,7 @@ spring:
     stream:
       bindings:
         consumeProduct-in-0:
-          destination: nexus.catalog.Product
+          destination: catalog.public.outbox
           group: inventory
           consumer:
             start-offset: earliest
@@ -36,7 +36,7 @@ spring:
           consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: inventory.nexus.catalog.Product.dlq
+              dlq-name: inventory.catalog.outbox.dlq
         listener:
           concurrency: 3
         binder:
