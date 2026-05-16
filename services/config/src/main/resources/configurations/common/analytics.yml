@@ -5,6 +5,8 @@ inbox:
     cron: "0 0 2 * * *"
     threshold-days: 2
     batch-size: 1000
+redis:
+  channel: nexus:analytics:sse
 spring:
   threads:
     virtual:

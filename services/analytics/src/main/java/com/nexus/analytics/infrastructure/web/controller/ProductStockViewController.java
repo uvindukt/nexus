@@ -1,7 +1,6 @@
 package com.nexus.analytics.infrastructure.web.controller;
 
-import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
-import com.nexus.analytics.application.service.ProductStockViewService;
+import com.nexus.analytics.infrastructure.config.SseEmitterRegistry;
 import com.nexus.analytics.infrastructure.web.constants.ApiConstants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = ApiConstants.Analytics.BASE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -17,11 +18,12 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class ProductStockViewController {
 
-    private final ProductStockViewService productStockViewService;
+    private final SseEmitterRegistry emitterRegistry;
 
     @GetMapping
-    public Flux<ProductStockViewResponse> streamProductStockChanges() {
-        return productStockViewService.streamActiveStockChanges();
+    public SseEmitter streamProductStockChanges() {
+        // TODO: Use auth sessions for client id when available
+        return emitterRegistry.register(UUID.randomUUID().toString());
     }
 
 }

@@ -1,35 +1,27 @@
 package com.nexus.analytics.application.service;
 
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import com.nexus.analytics.domain.model.ProductEventType;
+import com.nexus.analytics.domain.model.StockEventType;
 
 public interface ProductStockViewService {
 
-    Flux<ProductStockViewResponse> streamActiveStockChanges();
+    /**
+     * Processes and updates product information based on the incoming event.
+     *
+     * @param payload   The JSON payload containing product data.
+     * @param eventType The type of product event.
+     * @return The updated product stock view response.
+     */
+    ProductStockViewResponse upsertProductEvent(String payload, ProductEventType eventType);
 
     /**
-     * Handles the creation of a new product by initializing a ProductStockView.
+     * Processes and updates stock information based on the incoming event.
      *
-     * @param payload The JSON payload representing the ProductEvent.
-     * @return A Mono containing the created ProductStockViewResponse.
+     * @param payload   The JSON payload containing stock data.
+     * @param eventType The type of stock event.
+     * @return The updated product stock view response.
      */
-    Mono<ProductStockViewResponse> handleProductCreated(String payload);
-
-    /**
-     * Updates an existing product's information in the ProductStockView.
-     *
-     * @param payload The JSON payload representing the ProductEvent.
-     * @return A Mono containing the updated ProductStockViewResponse, or an error if not found.
-     */
-    Mono<ProductStockViewResponse> handleProductUpdated(String payload);
-
-    /**
-     * Updates stock levels for an existing product in the ProductStockView.
-     *
-     * @param payload The JSON payload representing the StockEvent.
-     * @return A Mono containing the updated ProductStockViewResponse, or an error if not found.
-     */
-    Mono<ProductStockViewResponse> handleStockUpsert(String payload);
+    ProductStockViewResponse upsertStockEvent(String payload, StockEventType eventType);
 
 }

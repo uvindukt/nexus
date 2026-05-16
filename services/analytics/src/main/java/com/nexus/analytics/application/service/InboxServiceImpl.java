@@ -1,25 +1,23 @@
 package com.nexus.analytics.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nexus.analytics.application.dto.web.event.v1.ProductStockViewEvent;
+import com.nexus.analytics.application.dto.web.event.v1.SseEnvelope;
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
-import com.nexus.analytics.application.mapper.ProductStockViewMapper;
 import com.nexus.analytics.domain.model.Inbox;
 import com.nexus.analytics.domain.model.ProductEventType;
 import com.nexus.analytics.domain.model.StockEventType;
 import com.nexus.analytics.domain.repository.InboxRepository;
 import com.nexus.shared.common.InboxEnvelope;
 import com.nexus.shared.common.InboxStatus;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.reactive.TransactionalOperator;
-import reactor.core.publisher.Mono;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Function;
-
 
 @Slf4j
 @Service
@@ -28,77 +26,111 @@ public class InboxServiceImpl implements InboxService {
 
     private final ProductStockViewService productStockViewService;
     private final InboxRepository inboxRepository;
-    private final AnalyticsBroadcaster analyticsBroadcaster;
-    private final ObjectMapper objectMapper;
-    private final ProductStockViewMapper productStockViewMapper;
-    private final TransactionalOperator transactionalOperator;
+    private final InboxAuditService inboxAuditService;
+    private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     @Override
-    public Mono<Void> onProductEvent(InboxEnvelope envelope) {
-        ProductEventType eventType = ProductEventType.valueOf(envelope.type());
-        return processWithIdempotency(envelope, payload -> switch (eventType) {
-            case PRODUCT_CREATED -> productStockViewService.handleProductCreated(payload);
-            case PRODUCT_UPDATED -> productStockViewService.handleProductUpdated(payload);
-        }).as(transactionalOperator::transactional);
+    public void onProductEvent(InboxEnvelope envelope) {
+
+        processEvent(envelope, payload -> {
+            ProductEventType eventType = ProductEventType.valueOf(envelope.type());
+            return switch (eventType) {
+                case PRODUCT_CREATED, PRODUCT_UPDATED -> productStockViewService.upsertProductEvent(payload, eventType);
+                default -> {
+                    log.info("Ignored unknown Product event Type - {}, ID - {}", envelope.type(), envelope.id());
+                    yield null;
+                }
+            };
+        });
+
     }
 
+    @Transactional
     @Override
-    public Mono<Void> onStockEvent(InboxEnvelope envelope) {
-        StockEventType eventType = StockEventType.valueOf(envelope.type());
-        return processWithIdempotency(envelope, payload -> switch (eventType) {
-            case STOCK_CREATED, STOCK_UPDATED -> productStockViewService.handleStockUpsert(payload);
-        }).as(transactionalOperator::transactional);
+    public void onStockEvent(InboxEnvelope envelope) {
+
+        processEvent(envelope, payload -> {
+            StockEventType eventType = StockEventType.valueOf(envelope.type());
+            return switch (eventType) {
+                case STOCK_CREATED, STOCK_UPDATED -> productStockViewService.upsertStockEvent(payload, eventType);
+                default -> {
+                    log.info("Ignored unknown Stock event Type - {}, ID - {}", envelope.type(), envelope.id());
+                    yield null;
+                }
+            };
+        });
+
     }
 
     /**
-     * Processes an incoming event with idempotency logic.
+     * Wrapper for event processors
      *
-     * @param envelope the event envelope containing metadata and payload
-     * @param handler  the business logic to execute if the message is new
-     * @return a Mono signaling completion
+     * @param envelope  {@link InboxEnvelope} whole message
+     * @param processor specific event processor
      */
-    private Mono<Void> processWithIdempotency(InboxEnvelope envelope, Function<String, Mono<ProductStockViewResponse>> handler) {
+    private void processEvent(InboxEnvelope envelope, Function<String, ProductStockViewResponse> processor) {
 
-        UUID messageId = UUID.fromString(envelope.id());
+        if (idempotencyCheck(envelope)) return;
 
-        return inboxRepository.existsById(messageId)
-                .flatMap(exists -> {
-                    if (exists) {
-                        log.info("Duplicate message ignored: {}", messageId);
-                        return Mono.empty();
-                    }
+        Inbox inbox = createInbox(envelope);
+        ProductStockViewResponse response;
 
-                    Inbox inbox = Inbox.of(
-                            messageId,
-                            envelope.aggregateType(),
-                            envelope.aggregateId(),
-                            envelope.type(),
-                            Json.of(envelope.payload())
-                    );
+        try {
+            response = processor.apply(envelope.payload());
+        } catch (RuntimeException e) {
+            inboxAuditService.saveAsFailed(inbox);
+            throw e;
+        }
 
-                    return inboxRepository.save(inbox)
-                            .flatMap(saved -> handler.apply(envelope.payload())
-                                    .flatMap(response -> {
-                                        // 1. Mark as processed
-                                        saved.setStatus(InboxStatus.PROCESSED.name());
-                                        saved.setProcessedAt(Instant.now());
+        if (response != null) {
+            inbox.setStatus(InboxStatus.PROCESSED);
+            inbox.setProcessedAt(Instant.now());
+            inboxRepository.save(inbox);
+            // for Transactional Event Listener to activate after this tx commits
+            SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
+            eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
+        } else {
+            inbox.setStatus(InboxStatus.SKIPPED);
+            inbox.setProcessedAt(Instant.now());
+            inboxRepository.save(inbox);
+        }
 
-                                        return inboxRepository.save(saved)
-                                                .flatMap(savedInbox -> Mono.fromCallable(() -> objectMapper.writeValueAsString(savedInbox)))
-                                                // 2. Shout to Redis Backplane
-                                                .doOnNext(json -> {
-                                                    try {
-                                                        analyticsBroadcaster.broadcast(json);
-                                                    } catch (Exception e) {
-                                                        log.error("Failed to broadcast analytics event", e);
-                                                    }
-                                                })
-                                                .then();
-                                    })
-                                    .doOnError(e -> log.error("Failed to process event: {}", messageId, e)));
-                })
-                .doOnError(e -> log.error("Failed to process event: {}", messageId, e))
-                .then();
+    }
+
+    /**
+     * Will return true if a duplicate is found
+     *
+     * @param inboxEnvelope Message
+     */
+    private boolean idempotencyCheck(InboxEnvelope inboxEnvelope) {
+
+        try {
+
+            if (inboxRepository.existsById(UUID.fromString(inboxEnvelope.id()))) {
+                log.warn("Message already exists ID - {}", inboxEnvelope.id());
+                return true;
+            }
+
+            return false;
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid UUID", e);
+        }
+
+    }
+
+    private Inbox createInbox(InboxEnvelope envelope) {
+
+        Inbox inbox = Inbox.builder()
+                .id(UUID.fromString(envelope.id()))
+                .type(envelope.type())
+                .status(InboxStatus.PENDING)
+                .aggregateId(envelope.aggregateId())
+                .aggregateType(envelope.aggregateType())
+                .payload(envelope.payload())
+                .build();
+        return inboxRepository.save(inbox);
 
     }
 

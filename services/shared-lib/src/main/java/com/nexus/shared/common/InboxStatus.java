@@ -1,5 +1,5 @@
 package com.nexus.shared.common;
 
 public enum InboxStatus {
-    PENDING, PROCESSED, FAILED
+    PENDING, PROCESSED, FAILED, SKIPPED
 }

@@ -1,24 +1,21 @@
 package com.nexus.analytics.domain.model;
 
-import com.nexus.shared.reactive.AbstractInboxReactive;
-import io.r2dbc.postgresql.codec.Json;
+import com.nexus.shared.jdbc.AbstractInbox;
+import jakarta.persistence.Entity;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.jspecify.annotations.NullMarked;
-import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.UUID;
-
+@SuperBuilder
 @NullMarked
-@Table("inbox")
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
-public class Inbox extends AbstractInboxReactive {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Inbox extends AbstractInbox {
 
-    public static Inbox of(UUID id, String aggregateType, String aggregateId, String type, Json payload) {
-        return create(Inbox::new, id, aggregateType, aggregateId, type, payload);
-    }
 
 }

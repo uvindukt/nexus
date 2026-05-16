@@ -1,20 +1,16 @@
 package com.nexus.analytics.application.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexus.analytics.application.dto.web.response.v1.ProductStockViewResponse;
 import com.nexus.analytics.application.mapper.ProductStockViewMapper;
-import com.nexus.analytics.domain.exception.EntryNotFoundException;
-import com.nexus.analytics.domain.model.ProductEvent;
-import com.nexus.analytics.domain.model.ProductStockView;
-import com.nexus.analytics.domain.model.StockEvent;
+import com.nexus.analytics.domain.exception.AnalyticsServiceException;
+import com.nexus.analytics.domain.model.*;
 import com.nexus.analytics.domain.repository.ProductStockViewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -24,79 +20,72 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
     private final ProductStockViewRepository productStockViewRepository;
     private final ObjectMapper objectMapper;
     private final ProductStockViewMapper productStockViewMapper;
-    private final AnalyticsBroadcaster analyticsBroadcaster;
+    private final AnalyticsBroadcasterService analyticsBroadcasterService;
 
+    @Transactional
     @Override
-    public Flux<ProductStockViewResponse> streamActiveStockChanges() {
+    public ProductStockViewResponse upsertProductEvent(String payload, ProductEventType eventType) {
 
-        return analyticsBroadcaster.getSseFlux()
-                .handle((json, sink) -> {
-                    try {
-                        // Filter out keep-alive pings if they are just strings
-                        if (!json.startsWith("{")) return;
-                        sink.next(objectMapper.readValue(json, ProductStockViewResponse.class));
-                    } catch (Exception e) {
-                        log.error("SSE Mapping error", e);
-                    }
-                })
-                .cast(ProductStockViewResponse.class);
+        try {
+
+            ProductEvent event = objectMapper.readValue(payload, ProductEvent.class);
+
+            ProductStockView view = productStockViewRepository.findById(event.id())
+                    .map(existingView -> {
+                        existingView.setProductName(event.name());
+                        existingView.setSlug(event.slug());
+                        existingView.setSku(event.sku());
+                        existingView.setPrice(event.price());
+                        existingView.setStatus(event.status());
+                        existingView.setBrandName(event.brandName());
+                        existingView.setCategoryName(event.categoryName());
+                        return existingView;
+                    })
+                    .orElseGet(() -> productStockViewRepository.save(ProductStockView.builder()
+                            .productId(event.id())
+                            .sku(event.sku())
+                            .productName(event.name())
+                            .brandName(event.brandName())
+                            .categoryName(event.categoryName())
+                            .status(event.status())
+                            .slug(event.slug())
+                            .price(event.price())
+                            .build()));
+
+            return productStockViewMapper.toResponse(view);
+
+        } catch (JsonProcessingException e) {
+            throw new AnalyticsServiceException(e, eventType.name());
+        }
 
     }
 
+    @Transactional
     @Override
-    public Mono<ProductStockViewResponse> handleProductCreated(String payload) {
-        return Mono.fromCallable(() -> objectMapper.readValue(payload, ProductEvent.class))
-                .flatMap(event -> {
-                    ProductStockView view = new ProductStockView();
-                    view.setProductId(event.id());
-                    setProductView(event, view);
-                    return productStockViewRepository.save(view);
-                })
-                .map(productStockViewMapper::toResponse);
-    }
+    public ProductStockViewResponse upsertStockEvent(String payload, StockEventType eventType) {
 
-    @Override
-    public Mono<ProductStockViewResponse> handleProductUpdated(String payload) {
-        return Mono.fromCallable(() -> objectMapper.readValue(payload, ProductEvent.class))
-                .flatMap(event -> productStockViewRepository.findById(event.id())
-                                .doOnNext(view -> setProductView(event, view))
-                                .flatMap(productStockViewRepository::save)
-//                        .switchIfEmpty(Mono.error(new EntryNotFoundException(event.id())))
-                )
-                .map(productStockViewMapper::toResponse);
-    }
+        try {
 
-    @Override
-    public Mono<ProductStockViewResponse> handleStockUpsert(String payload) {
-        return Mono.fromCallable(() -> objectMapper.readValue(payload, StockEvent.class))
-                .flatMap(event -> productStockViewRepository.findById(event.id())
-                        .doOnNext(view -> {
-                            view.setAvailableQuantity(event.availableQuantity());
-                            view.setReservedQuantity(event.reservedQuantity());
-                            view.setTotalQuantity(event.availableQuantity() + event.reservedQuantity());
-                            view.setLastUpdated(Instant.now());
-                        })
-                        .flatMap(productStockViewRepository::save)
-                        .switchIfEmpty(Mono.error(new EntryNotFoundException(event.id())))
-                )
-                .map(productStockViewMapper::toResponse);
-    }
+            StockEvent event = objectMapper.readValue(payload, StockEvent.class);
 
-    /**
-     * Maps fields from a ProductEvent to a ProductStockView entity.
-     *
-     * @param event The source product event.
-     * @param view  The target view entity.
-     */
-    private void setProductView(ProductEvent event, ProductStockView view) {
-        view.setProductName(event.name());
-        view.setSlug(event.slug());
-        view.setSku(event.sku());
-        view.setPrice(event.price());
-        view.setStatus(event.status());
-        view.setBrandName(event.brandName());
-        view.setCategoryName(event.categoryName());
-        view.setLastUpdated(Instant.now());
+            ProductStockView view = productStockViewRepository.findById(event.id())
+                    .map(existingView -> {
+                        existingView.setAvailableQuantity(event.availableQuantity());
+                        existingView.setReservedQuantity(event.reservedQuantity());
+                        return existingView;
+                    })
+                    .orElseGet(() -> productStockViewRepository.save(ProductStockView.builder()
+                            .productId(event.id())
+                            .availableQuantity(event.availableQuantity())
+                            .reservedQuantity(event.reservedQuantity())
+                            .build()));
+
+            return productStockViewMapper.toResponse(view);
+
+        } catch (JsonProcessingException e) {
+            throw new AnalyticsServiceException(e, eventType.name());
+        }
+
     }
 
 }

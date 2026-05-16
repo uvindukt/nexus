@@ -1,19 +1,19 @@
 spring:
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/analytics
+  datasource:
     username: postgres
     password: postgres
-  sql:
-    init:
-      mode: never
-
-  # Liquibase needs its own JDBC connection — R2DBC can't run it
+    url: jdbc:postgresql://localhost:5432/catalog
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        temp.use_jdbc_metadata_defaults: true
+        jdbc:
+          fetch_size: 50
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
-    url: jdbc:postgresql://localhost:5432/analytics
-    user: postgres
-    password: postgres
-    enabled: true
   data:
     redis:
       host: localhost

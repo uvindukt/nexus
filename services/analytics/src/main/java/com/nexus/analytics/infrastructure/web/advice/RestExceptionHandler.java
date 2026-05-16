@@ -1,6 +1,6 @@
 package com.nexus.analytics.infrastructure.web.advice;
 
-import com.nexus.analytics.domain.exception.DuplicateEntryException;
+import com.nexus.analytics.domain.exception.AnalyticsServiceException;
 import com.nexus.analytics.domain.exception.EntryNotFoundException;
 import com.nexus.analytics.infrastructure.web.constants.ErrorConstants;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ public class RestExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(DuplicateEntryException.class)
-    public Mono<ResponseEntity<ProblemDetail>> handleDuplicateEntry(DuplicateEntryException exception) {
+    @ExceptionHandler(AnalyticsServiceException.class)
+    public Mono<ResponseEntity<ProblemDetail>> handleDuplicateEntry(AnalyticsServiceException exception) {
 
         String message = messageSource.getMessage(exception.getMessage(), exception.getArgs(), LocaleContextHolder.getLocale());
         log.error(ErrorConstants.Log.DUPLICATE_ENTRY, message);

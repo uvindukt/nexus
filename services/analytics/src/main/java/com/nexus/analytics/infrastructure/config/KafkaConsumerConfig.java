@@ -4,14 +4,12 @@ import com.nexus.analytics.domain.port.in.ProductConsumer;
 import com.nexus.analytics.domain.port.in.StockConsumer;
 import com.nexus.shared.common.InboxEnvelope;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 
 import java.util.function.Consumer;
 
-@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConsumerConfig {
@@ -21,23 +19,22 @@ public class KafkaConsumerConfig {
 
     @Bean
     public Consumer<Message<InboxEnvelope>> consumeProduct() {
+
         return message -> {
-            log.info("Received product message: {}", message.getPayload());
-            productConsumer.consumeProduct(message.getPayload())
-                    .doOnError(err -> log.error("Error processing product message", err))
-                    .subscribe();
+            InboxEnvelope inboxEnvelope = message.getPayload();
+            productConsumer.consumeProduct(inboxEnvelope);
         };
+
     }
 
     @Bean
     public Consumer<Message<InboxEnvelope>> consumeStock() {
-        return message -> {
-            log.info("Received stock message: {}", message.getPayload());
-            stockConsumer.consumeStock(message.getPayload())
-                    .doOnError(err -> log.error("Error processing stock message", err))
-                    .subscribe();
-        };
-    }
 
+        return message -> {
+            InboxEnvelope inboxEnvelope = message.getPayload();
+            stockConsumer.consumeStock(inboxEnvelope);
+        };
+
+    }
 
 }

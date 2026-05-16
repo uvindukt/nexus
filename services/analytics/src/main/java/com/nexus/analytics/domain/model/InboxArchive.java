@@ -1,24 +1,27 @@
 package com.nexus.analytics.domain.model;
 
-import com.nexus.shared.reactive.AbstractInboxReactive;
-import io.r2dbc.postgresql.codec.Json;
+import com.nexus.shared.jdbc.AbstractInbox;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NullMarked;
-import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.UUID;
+import java.time.Instant;
 
 @NullMarked
-@Table("inbox_archive")
+@SuperBuilder
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class InboxArchive extends AbstractInboxReactive {
+public class InboxArchive extends AbstractInbox {
 
-    public static InboxArchive of(UUID id, String aggregateType, String aggregateId, String type, Json payload) {
-        return create(InboxArchive::new, id, aggregateType, aggregateId, type, payload);
-    }
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant archivedAt;
 
 }
