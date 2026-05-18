@@ -3,7 +3,6 @@ package com.nexus.analytics.application.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexus.analytics.application.dto.web.event.v1.SseEnvelope;
 import com.nexus.analytics.infrastructure.config.SseEmitterRegistry;
-import com.nexus.shared.common.InboxEnvelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -27,6 +26,7 @@ public class AnalyticsRedisSubscriber implements MessageListener {
         try {
             SseEnvelope envelope = objectMapper.readValue(message.getBody(), SseEnvelope.class);
             emitterRegistry.broadcast(envelope); // Push to local SSE clients
+            log.info("SSE emitted: {}", envelope.id());
         } catch (IOException e) {
             log.error("Failed to deserialize Redis message", e);
         }

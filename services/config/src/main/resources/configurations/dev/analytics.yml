@@ -27,7 +27,7 @@ spring:
           destination: catalog.public.outbox
           group: analytics
           consumer:
-            start-offset: earliest
+            start-offset: latest
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-multiplier: 2.0
@@ -39,7 +39,7 @@ spring:
           destination: inventory.public.outbox
           group: analytics
           consumer:
-            start-offset: earliest
+            start-offset: latest
             max-attempts: 3
             back-off-initial-interval: 1000
             back-off-multiplier: 2.0

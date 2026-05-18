@@ -82,11 +82,11 @@ services:
         condition: service_healthy
     restart: on-failure
     volumes:
-      - ./inventory_outbox_connector.json:/home/curl_user/inventory_outbox_connector.json
+      - ./cdc_connector.json:/home/curl_user/cdc_connector.json
     command: >
       curl -X POST http://connect:8083/connectors
       -H "Content-Type: application/json"
-      -d @/home/curl_user/inventory_outbox_connector.json
+      -d @/home/curl_user/cdc_connector.json
 
   redis:
     image: redis:7-alpine

@@ -1,5 +1,5 @@
 {
-  "name": "inventory_outbox_connector",
+  "name": "cdc_connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "topic.prefix": "inventory",
