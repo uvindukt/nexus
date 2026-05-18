@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -34,16 +33,33 @@ public class InboxServiceImpl implements InboxService {
     @Override
     public void onProductEvent(InboxEnvelope envelope) {
 
-        processEvent(envelope, payload -> {
-            ProductEventType eventType = ProductEventType.valueOf(envelope.type());
-            return switch (eventType) {
-                case PRODUCT_CREATED, PRODUCT_UPDATED -> productStockViewService.upsertProductEvent(payload, eventType);
-                default -> {
-                    log.info("Ignored unknown Product event Type - {}, ID - {}", envelope.type(), envelope.id());
-                    yield null;
-                }
-            };
-        });
+        if (idempotencyCheck(envelope)) return;
+
+        Inbox inbox = createInbox(envelope);
+        ProductEventType eventType = ProductEventType.valueOf(envelope.type());
+
+        try {
+
+            if (eventType == ProductEventType.PRODUCT_CREATED || eventType == ProductEventType.PRODUCT_UPDATED) {
+                ProductStockViewResponse response = productStockViewService.upsertProductEvent(inbox.getPayload(), eventType);
+                inbox.setStatus(InboxStatus.PROCESSED);
+                inbox.setProcessedAt(Instant.now());
+                inboxRepository.save(inbox);
+                // for Transactional Event Listener to activate after this tx commits
+                SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
+                eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
+            } else {
+                log.info("Ignored unknown Product event Type - {}, ID - {}", envelope.type(), envelope.id());
+                inbox.setStatus(InboxStatus.SKIPPED);
+                inbox.setProcessedAt(Instant.now());
+                inboxRepository.save(inbox);
+            }
+
+        } catch (AnalyticsServiceException e) {
+            inboxAuditService.saveAsFailed(inbox);
+            log.error("Error processing InboxEvent - ID: {}", envelope.id(), e);
+            throw e;
+        }
 
     }
 
@@ -51,51 +67,32 @@ public class InboxServiceImpl implements InboxService {
     @Override
     public void onStockEvent(InboxEnvelope envelope) {
 
-        processEvent(envelope, payload -> {
-            StockEventType eventType = StockEventType.valueOf(envelope.type());
-            return switch (eventType) {
-                case STOCK_CREATED, STOCK_UPDATED -> productStockViewService.upsertStockEvent(payload, eventType);
-                default -> {
-                    log.info("Ignored unknown Stock event Type - {}, ID - {}", envelope.type(), envelope.id());
-                    yield null;
-                }
-            };
-        });
-
-    }
-
-    /**
-     * Wrapper for event processors
-     *
-     * @param envelope  {@link InboxEnvelope} whole message
-     * @param processor specific event processor
-     */
-    private void processEvent(InboxEnvelope envelope, Function<String, ProductStockViewResponse> processor) {
-
         if (idempotencyCheck(envelope)) return;
 
         Inbox inbox = createInbox(envelope);
-        ProductStockViewResponse response;
+        StockEventType eventType = StockEventType.valueOf(envelope.type());
 
         try {
-            response = processor.apply(envelope.payload());
+
+            if (eventType == StockEventType.STOCK_CREATED || eventType == StockEventType.STOCK_UPDATED) {
+                ProductStockViewResponse response = productStockViewService.upsertStockEvent(inbox.getPayload(), eventType);
+                inbox.setStatus(InboxStatus.PROCESSED);
+                inbox.setProcessedAt(Instant.now());
+                inboxRepository.save(inbox);
+                // for Transactional Event Listener to activate after this tx commits
+                SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
+                eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
+            } else {
+                log.info("Ignored unknown Stock event Type - {}, ID - {}", envelope.type(), envelope.id());
+                inbox.setStatus(InboxStatus.SKIPPED);
+                inbox.setProcessedAt(Instant.now());
+                inboxRepository.save(inbox);
+            }
+
         } catch (AnalyticsServiceException e) {
             inboxAuditService.saveAsFailed(inbox);
             log.error("Error processing InboxEvent - ID: {}", envelope.id(), e);
             throw e;
-        }
-
-        if (response != null) {
-            inbox.setStatus(InboxStatus.PROCESSED);
-            inbox.setProcessedAt(Instant.now());
-            inboxRepository.save(inbox);
-            // for Transactional Event Listener to activate after this tx commits
-            SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
-            eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
-        } else {
-            inbox.setStatus(InboxStatus.SKIPPED);
-            inbox.setProcessedAt(Instant.now());
-            inboxRepository.save(inbox);
         }
 
     }
