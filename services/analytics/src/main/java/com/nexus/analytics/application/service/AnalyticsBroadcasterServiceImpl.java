@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -23,7 +22,7 @@ public class AnalyticsBroadcasterServiceImpl implements AnalyticsBroadcasterServ
     @Value("${redis.channel}")
     private String redisChannel;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional
     @Override
     public void publish(ProductStockViewEvent event) {
         SseEnvelope envelope = event.envelope();

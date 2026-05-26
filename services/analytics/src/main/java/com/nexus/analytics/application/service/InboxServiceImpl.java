@@ -12,7 +12,6 @@ import com.nexus.shared.common.InboxEnvelope;
 import com.nexus.shared.common.InboxStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class InboxServiceImpl implements InboxService {
     private final ProductStockViewService productStockViewService;
     private final InboxRepository inboxRepository;
     private final InboxAuditService inboxAuditService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final AnalyticsBroadcasterService analyticsBroadcasterService;
 
     @Transactional
     @Override
@@ -47,7 +46,7 @@ public class InboxServiceImpl implements InboxService {
                 inboxRepository.save(inbox);
                 // for Transactional Event Listener to activate after this tx commits
                 SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
-                eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
+                analyticsBroadcasterService.publish(new ProductStockViewEvent(sseEnvelope));
             } else {
                 log.info("Ignored unknown Product event Type - {}, ID - {}", envelope.type(), envelope.id());
                 inbox.setStatus(InboxStatus.SKIPPED);
@@ -81,7 +80,7 @@ public class InboxServiceImpl implements InboxService {
                 inboxRepository.save(inbox);
                 // for Transactional Event Listener to activate after this tx commits
                 SseEnvelope sseEnvelope = new SseEnvelope(envelope.id(), envelope.aggregateId(), envelope.aggregateType(), envelope.type(), response);
-                eventPublisher.publishEvent(new ProductStockViewEvent(sseEnvelope));
+                analyticsBroadcasterService.publish(new ProductStockViewEvent(sseEnvelope));
             } else {
                 log.info("Ignored unknown Stock event Type - {}, ID - {}", envelope.type(), envelope.id());
                 inbox.setStatus(InboxStatus.SKIPPED);
