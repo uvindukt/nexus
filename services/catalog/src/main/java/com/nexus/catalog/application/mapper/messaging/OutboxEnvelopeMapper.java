@@ -15,7 +15,7 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface OutboxEnvelopeMapper {
 
-    OutboxEnvelope toEvent(Outbox outbox);
+    OutboxEnvelope toEnvelope(Outbox outbox);
 
     OutboxArchive toArchive(Outbox outbox);
 

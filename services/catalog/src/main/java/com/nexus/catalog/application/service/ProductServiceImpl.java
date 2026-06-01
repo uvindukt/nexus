@@ -10,6 +10,7 @@ import com.nexus.catalog.domain.model.Category;
 import com.nexus.catalog.domain.model.Product;
 import com.nexus.catalog.domain.model.ProductEventType;
 import com.nexus.catalog.domain.repository.BrandRepository;
+import com.nexus.catalog.domain.repository.CachedProductRepository;
 import com.nexus.catalog.domain.repository.CategoryRepository;
 import com.nexus.catalog.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
     public static final String SLUG = "Slug";
 
     private final ProductRepository productRepository;
+    private final CachedProductRepository cachedProductRepository;
     private final ProductMapper productMapper;
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
@@ -113,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse get(Long productId) {
 
-        return productRepository.findById(productId).map(productMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        return cachedProductRepository.findById(productId).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
 
     }
 
@@ -121,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse get(String sku) {
 
-        return productRepository.findBySku(sku).map(productMapper::toResponse).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
+        return cachedProductRepository.findBySku(sku).orElseThrow(() -> new EntryNotFoundException(Product.class.getSimpleName()));
 
     }
 

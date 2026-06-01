@@ -13,10 +13,10 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface ProductEventMapper {
+public interface ProductPayloadMapper {
 
     @Mapping(source = "brand.name", target = "brandName")
     @Mapping(source = "category.name", target = "categoryName")
-    ProductEvent toEvent(Product product);
+    ProductEvent toPayload(Product product);
 
 }

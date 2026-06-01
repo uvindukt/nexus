@@ -3,7 +3,7 @@ package com.nexus.catalog.application.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexus.catalog.application.mapper.messaging.OutboxEnvelopeMapper;
-import com.nexus.catalog.application.mapper.messaging.ProductEventMapper;
+import com.nexus.catalog.application.mapper.messaging.ProductPayloadMapper;
 import com.nexus.catalog.domain.exception.OutboxPublishException;
 import com.nexus.catalog.domain.model.Outbox;
 import com.nexus.catalog.domain.model.OutboxArchive;
@@ -32,7 +32,7 @@ public class OutboxServiceImpl implements OutboxService {
     private final OutboxRepository outboxRepository;
     private final ProductPublisher productPublisher;
     private final OutboxEnvelopeMapper outboxEnvelopeMapper;
-    private final ProductEventMapper productEventMapper;
+    private final ProductPayloadMapper productPayloadMapper;
     private final ObjectMapper objectMapper;
 
     @Transactional
@@ -42,7 +42,7 @@ public class OutboxServiceImpl implements OutboxService {
         String payload;
 
         try {
-            payload = objectMapper.writeValueAsString(productEventMapper.toEvent(product));
+            payload = objectMapper.writeValueAsString(productPayloadMapper.toPayload(product));
         } catch (JsonProcessingException e) {
             throw new OutboxPublishException(e, product.getId());
         }
@@ -62,7 +62,7 @@ public class OutboxServiceImpl implements OutboxService {
     @Override
     public void publishSingle(Outbox outbox) {
 
-        productPublisher.publishProduct(outboxEnvelopeMapper.toEvent(outbox), String.valueOf(outbox.getId()));
+        productPublisher.publishProduct(outboxEnvelopeMapper.toEnvelope(outbox), String.valueOf(outbox.getId()));
         outbox.setStatus(OutboxStatus.PROCESSED);
         outbox.setProcessedAt(Instant.now());
 
