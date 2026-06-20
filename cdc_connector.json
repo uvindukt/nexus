@@ -2,6 +2,7 @@
   "name": "cdc_connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
     "topic.prefix": "inventory",
     "database.hostname": "postgres",
     "database.port": "5432",

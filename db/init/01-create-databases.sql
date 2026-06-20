@@ -25,3 +25,10 @@ WHERE NOT EXISTS (SELECT
                   FROM pg_database
                   WHERE datname = 'analytics')
 \gexec
+
+-- Create rag DB for the app (Liquibase will manage its schema)
+SELECT 'CREATE DATABASE rag'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'rag')
+\gexec
+\connect rag
+CREATE EXTENSION IF NOT EXISTS vector;
