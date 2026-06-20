@@ -7,7 +7,7 @@ import com.nexus.inventory.application.dto.web.Validate;
 import com.nexus.inventory.application.dto.web.request.v1.StockRequest;
 import com.nexus.inventory.application.dto.web.response.v1.StockResponse;
 import com.nexus.inventory.application.service.StockService;
-import com.nexus.inventory.infrastructure.web.constants.ApiConstants;
+import com.nexus.inventory.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

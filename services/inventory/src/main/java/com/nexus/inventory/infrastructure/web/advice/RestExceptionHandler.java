@@ -1,7 +1,7 @@
 package com.nexus.inventory.infrastructure.web.advice;
 
 import com.nexus.inventory.domain.exception.EntryNotFoundException;
-import com.nexus.inventory.infrastructure.web.constants.ErrorConstants;
+import com.nexus.inventory.infrastructure.web.constant.ErrorConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;

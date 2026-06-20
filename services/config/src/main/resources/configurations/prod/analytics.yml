@@ -25,8 +25,9 @@ spring:
       bindings:
         consumeProduct-in-0:
           destination: catalog.public.outbox
-          group: analytics
+          group: analytics-product
           consumer:
+            concurrency: 3
             start-offset: latest
             max-attempts: 3
             back-off-initial-interval: 1000
@@ -37,8 +38,9 @@ spring:
               java.lang.ClassCastException: false
         consumeStock-in-0:
           destination: inventory.public.outbox
-          group: analytics
+          group: analytics-inventory
           consumer:
+            concurrency: 3
             start-offset: latest
             max-attempts: 3
             back-off-initial-interval: 1000
@@ -57,8 +59,6 @@ spring:
             consumer:
               enable-dlq: true
               dlq-name: analytics.inventory.outbox.dlq
-        listener:
-          concurrency: 3
         binder:
           brokers: localhost:29092
           auto-create-topics: true

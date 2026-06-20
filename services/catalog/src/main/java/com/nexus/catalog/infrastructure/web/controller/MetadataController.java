@@ -1,7 +1,7 @@
 package com.nexus.catalog.infrastructure.web.controller;
 
 import com.nexus.catalog.domain.model.ProductStatus;
-import com.nexus.catalog.infrastructure.web.constants.ApiConstants;
+import com.nexus.catalog.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

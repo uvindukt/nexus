@@ -1,7 +1,7 @@
 package com.nexus.analytics.infrastructure.web.controller;
 
 import com.nexus.analytics.infrastructure.config.SseEmitterRegistry;
-import com.nexus.analytics.infrastructure.web.constants.ApiConstants;
+import com.nexus.analytics.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

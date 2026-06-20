@@ -1,6 +1,6 @@
-package com.nexus.inventory.infrastructure.web.constants;
+package com.nexus.analytics.infrastructure.web.constant;
 
-public class ErrorConstants {
+public final class ErrorConstants {
 
     private ErrorConstants() {
     }
@@ -34,5 +34,6 @@ public class ErrorConstants {
         public static final String INVALID_PRODUCT_STATE = "Invalid Product State Exception: {}";
         public static final String UNHANDLED_EXCEPTION = "Unhandled Exception: ";
     }
+
 
 }

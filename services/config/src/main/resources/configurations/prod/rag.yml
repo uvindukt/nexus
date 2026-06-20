@@ -2,7 +2,7 @@ spring:
   datasource:
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5432/analytics
+    url: jdbc:postgresql://localhost:5432/rag
   jpa:
     hibernate:
       ddl-auto: validate
@@ -25,7 +25,7 @@ spring:
       bindings:
         consumeProduct-in-0:
           destination: catalog.public.outbox
-          group: analytics-product
+          group: rag-catalog
           consumer:
             concurrency: 3
             start-offset: latest
@@ -38,7 +38,7 @@ spring:
               java.lang.ClassCastException: false
         consumeStock-in-0:
           destination: inventory.public.outbox
-          group: analytics-inventory
+          group: rag-inventory
           consumer:
             concurrency: 3
             start-offset: latest

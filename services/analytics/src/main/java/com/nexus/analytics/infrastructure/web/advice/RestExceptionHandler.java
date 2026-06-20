@@ -2,7 +2,7 @@ package com.nexus.analytics.infrastructure.web.advice;
 
 import com.nexus.analytics.domain.exception.AnalyticsServiceException;
 import com.nexus.analytics.domain.exception.EntryNotFoundException;
-import com.nexus.analytics.infrastructure.web.constants.ErrorConstants;
+import com.nexus.analytics.infrastructure.web.constant.ErrorConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;

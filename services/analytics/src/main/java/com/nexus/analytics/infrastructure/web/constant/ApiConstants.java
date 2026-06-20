@@ -1,4 +1,4 @@
-package com.nexus.analytics.infrastructure.web.constants;
+package com.nexus.analytics.infrastructure.web.constant;
 
 public final class ApiConstants {
 

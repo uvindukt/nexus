@@ -4,7 +4,7 @@ import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
 import com.nexus.catalog.domain.exception.InvalidHierarchyException;
 import com.nexus.catalog.domain.exception.InvalidProductStateException;
-import com.nexus.catalog.infrastructure.web.constants.ErrorConstants;
+import com.nexus.catalog.infrastructure.web.constant.ErrorConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;

@@ -7,7 +7,7 @@ import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.request.v1.BrandRequest;
 import com.nexus.catalog.application.dto.web.response.v1.BrandResponse;
 import com.nexus.catalog.application.service.BrandService;
-import com.nexus.catalog.infrastructure.web.constants.ApiConstants;
+import com.nexus.catalog.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

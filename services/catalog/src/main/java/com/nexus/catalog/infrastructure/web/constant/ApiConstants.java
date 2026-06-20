@@ -1,4 +1,4 @@
-package com.nexus.catalog.infrastructure.web.constants;
+package com.nexus.catalog.infrastructure.web.constant;
 
 public final class ApiConstants {
 

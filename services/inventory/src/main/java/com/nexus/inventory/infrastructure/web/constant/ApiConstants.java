@@ -1,4 +1,4 @@
-package com.nexus.inventory.infrastructure.web.constants;
+package com.nexus.inventory.infrastructure.web.constant;
 
 public class ApiConstants {
 

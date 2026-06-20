@@ -1,0 +1,44 @@
+server:
+  port: 8085
+inbox:
+  archive:
+    cron: "0 0 2 * * *"
+    threshold-days: 2
+    batch-size: 1000
+spring:
+  threads:
+    virtual:
+      enabled: true
+  springdoc:
+    writer-with-json-view: true
+    model-and-view-allowed: true
+    show-actuator: false
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+    group-configs:
+      - group: 'AI API'
+        paths-to-match: /v1/**
+    open-api:
+      info:
+        title: "Nexus AI"
+        version: "v1"
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, metrics, prometheus, loggers
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+    metrics:
+      enabled: true
+  observations:
+    key-values:
+      application: project-nexus
