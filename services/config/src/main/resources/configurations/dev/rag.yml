@@ -69,6 +69,13 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://your-auth-server/realms/nexus
+  ai:
+    google:
+      genai:
+        api-key: ${GOOGLE_AI_API_KEY}
+    vectorstore:
+      pgvector:
+        initialize-schema: false  # Liquibase owns the schema
 eureka:
   client:
     register-with-eureka: true

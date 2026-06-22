@@ -26,6 +26,26 @@ spring:
       enabled: true
     swagger-ui:
       enabled: true
+  ai:
+    google:
+      genai:
+        chat:
+          options:
+            model: gemini-2.0-flash
+        embedding:
+          options:
+            model: text-embedding-004
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768
+        initialize-schema: false
+    chat:
+      memory:
+        repository:
+          redis:
+            key-prefix: "nexus:rag:memory:"
 management:
   endpoints:
     web:
