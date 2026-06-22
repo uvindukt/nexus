@@ -73,6 +73,8 @@ spring:
     google:
       genai:
         api-key: ${GOOGLE_AI_API_KEY}
+        embedding:
+          api-key: ${GOOGLE_AI_API_KEY}
     vectorstore:
       pgvector:
         initialize-schema: false  # Liquibase owns the schema
