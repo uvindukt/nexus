@@ -1,4 +1,4 @@
-package com.nexus.catalog.domain.model;
+package com.nexus.rag.domain.model.consumer;
 
 import java.math.BigDecimal;
 
