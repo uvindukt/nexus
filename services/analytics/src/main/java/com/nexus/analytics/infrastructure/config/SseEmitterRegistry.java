@@ -2,6 +2,8 @@ package com.nexus.analytics.infrastructure.config;
 
 import com.nexus.analytics.application.dto.web.event.v1.SseEnvelope;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -38,6 +40,19 @@ public class SseEmitterRegistry {
                 emitters.remove(clientId);
             }
         });
+    }
+
+    @EventListener(ContextClosedEvent.class)
+    public void closeAllConnections() {
+        // Forcibly close all active client streams
+        emitters.forEach((clientId, emitter) -> {
+            try {
+                emitter.complete();
+            } catch (Exception e) {
+                log.error("Failed to close SSE connections", e);
+            }
+        });
+        emitters.clear();
     }
 
 }
