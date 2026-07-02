@@ -31,10 +31,11 @@ spring:
       genai:
         chat:
           options:
-            model: gemini-2.0-flash
+            model: gemini-3.5-flash
         embedding:
-          options:
-            model: text-embedding-004
+          text:
+            options:
+              model: gemini-embedding-2
     vectorstore:
       pgvector:
         index-type: HNSW

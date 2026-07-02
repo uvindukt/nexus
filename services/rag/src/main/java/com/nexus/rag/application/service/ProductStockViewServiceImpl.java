@@ -2,7 +2,6 @@ package com.nexus.rag.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexus.rag.application.dto.web.response.v1.ProductStockViewResponse;
 import com.nexus.rag.application.mapper.ProductStockViewMapper;
 import com.nexus.rag.domain.exception.RagServiceException;
 import com.nexus.rag.domain.model.ProductStockView;
@@ -24,10 +23,11 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
     private final ProductStockViewRepository productStockViewRepository;
     private final ObjectMapper objectMapper;
     private final ProductStockViewMapper productStockViewMapper;
+    private final IngestionService ingestionService;
 
     @Transactional
     @Override
-    public ProductStockViewResponse upsertProductEvent(String payload, ProductEventType eventType) {
+    public void upsertProductEvent(String payload, ProductEventType eventType) {
 
         try {
 
@@ -57,7 +57,7 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
                             .price(event.price())
                             .build()));
 
-            return productStockViewMapper.toResponse(view);
+            ingestionService.upsertEmbedding(view);
 
         } catch (JsonProcessingException e) {
             throw new RagServiceException(e, eventType.name());
@@ -67,13 +67,13 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
 
     @Transactional
     @Override
-    public ProductStockViewResponse upsertStockEvent(String payload, StockEventType eventType) {
+    public void upsertStockEvent(String payload, StockEventType eventType) {
 
         try {
 
             StockEvent event = objectMapper.readValue(payload, StockEvent.class);
 
-            ProductStockView view = productStockViewRepository.findById(event.id())
+            productStockViewRepository.findById(event.id())
                     .map(existingView -> {
                         existingView.setAvailableQuantity(event.availableQuantity());
                         existingView.setReservedQuantity(event.reservedQuantity());
@@ -84,8 +84,6 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
                             .availableQuantity(event.availableQuantity())
                             .reservedQuantity(event.reservedQuantity())
                             .build()));
-
-            return productStockViewMapper.toResponse(view);
 
         } catch (JsonProcessingException e) {
             throw new RagServiceException(e, eventType.name());

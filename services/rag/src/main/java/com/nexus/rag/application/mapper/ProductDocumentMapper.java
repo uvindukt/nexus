@@ -18,10 +18,10 @@ import java.util.Map;
 public abstract class ProductDocumentMapper {
 
     public Document toDocument(ProductStockView product, String contentHash) {
-        return new Document(
-                buildContent(product),
-                buildMetadata(product, contentHash)
-        );
+        return Document.builder()
+                .text(buildContent(product))
+                .metadata(buildMetadata(product, contentHash))
+                .build();
     }
 
     protected String buildContent(ProductStockView product) {

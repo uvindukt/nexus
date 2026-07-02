@@ -54,11 +54,11 @@ spring:
           consumeProduct-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: analytics.catalog.outbox.dlq
+              dlq-name: rag.catalog.outbox.dlq
           consumeStock-in-0:
             consumer:
               enable-dlq: true
-              dlq-name: analytics.inventory.outbox.dlq
+              dlq-name: rag.inventory.outbox.dlq
         binder:
           brokers: localhost:29092
           auto-create-topics: true
@@ -75,6 +75,10 @@ spring:
         api-key: ${GOOGLE_AI_API_KEY}
         embedding:
           api-key: ${GOOGLE_AI_API_KEY}
+          text:
+            options:
+              model: gemini-embedding-2
+              dimensions: 768
     vectorstore:
       pgvector:
         initialize-schema: false  # Liquibase owns the schema
