@@ -3,7 +3,6 @@ package com.nexus.rag.application.service;
 import com.nexus.rag.application.dto.web.response.v1.ProductSearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.ToolCallingAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.preretrieval.query.transformation.QueryTransformer;
@@ -29,16 +28,19 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         this.vectorStore = vectorStore;
 
+        // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .similarityThreshold(0.75)
-                .topK(5)
+                .similarityThreshold(0.75) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
+                .topK(5) // No. of similarity results (most similar)
                 .build();
 
+        // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)
         QueryTransformer rewriteTransformer = RewriteQueryTransformer.builder()
                 .chatClientBuilder(chatClientBuilder.build().mutate())
                 .build();
 
+        // Spring AI RAG Advisor wrapper configuration
         Advisor ragAdvisor = RetrievalAugmentationAdvisor.builder()
                 .queryTransformers(rewriteTransformer)
                 .documentRetriever(retriever)
