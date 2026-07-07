@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -15,5 +17,7 @@ import org.mapstruct.ReportingPolicy;
 public interface ProductStockViewMapper {
 
     ProductStockViewResponse toResponse(ProductStockView productStockView);
+
+    List<ProductStockViewResponse> toResponse(List<ProductStockView> productStockViews);
 
 }
