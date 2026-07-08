@@ -26,6 +26,20 @@ Nexus is an e-commerce platform built as a Spring Boot microservices system, com
 
 Cross-cutting infrastructure: PostgreSQL (with pgvector), Kafka + Debezium (CDC), Redis, Keycloak (OAuth2/OIDC).
 
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=spring&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Spring Cloud](https://img.shields.io/badge/Spring_Cloud-6DB33F?style=flat-square&logo=spring&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=flat-square&logo=apachekafka&logoColor=white)
+![Debezium](https://img.shields.io/badge/Debezium-FF6A00?style=flat-square&logo=debezium&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75EC?style=flat-square&logo=googlegemini&logoColor=white)
+![Keycloak](https://img.shields.io/badge/Keycloak-2563EB?style=flat-square&logo=keycloak&logoColor=white)
+![Spring AI](https://img.shields.io/badge/Spring_AI-6DB33F?style=flat-square&logo=spring&logoColor=white)
+![Apache Maven](https://img.shields.io/badge/Apache_Maven-C71A36?style=flat-square&logo=apachemaven&logoColor=white)
+![Liquibase](https://img.shields.io/badge/Liquibase-205C90?style=flat-square&logo=liquibase&logoColor=white)
+![Swagger UI](https://img.shields.io/badge/Swagger_UI-85EA2D?style=flat-square&logo=swagger&logoColor=black)
+
 ## Services
 
 | Service | Responsibility | Port |
