@@ -1,6 +1,6 @@
 # Nexus
 
-Nexus is an e-commerce platform built as a Spring Boot microservices system, combining classic transactional patterns (outbox/inbox, CDC) with a Retrieval-Augmented Generation (RAG) service for natural-language product search.
+Nexus is an e-commerce platform accelerator built as an event driven Spring Boot microservices system, combining classic transactional patterns (outbox/inbox, CDC) with a Retrieval-Augmented Generation (RAG) service for natural-language product search.
 
 ## Architecture
 
