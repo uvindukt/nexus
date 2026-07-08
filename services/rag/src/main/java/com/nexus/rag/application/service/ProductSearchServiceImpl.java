@@ -48,8 +48,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .similarityThreshold(0.75) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
-                .topK(5) // No. of similarity results (most similar)
+                .similarityThreshold(0.5) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
+                .topK(1) // No. of similarity results (most similar)
                 .build();
 
         // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)

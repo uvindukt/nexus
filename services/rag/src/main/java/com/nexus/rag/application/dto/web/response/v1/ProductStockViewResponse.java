@@ -25,6 +25,8 @@ public record ProductStockViewResponse(
         String brandName,
         @JsonView(OutboundView.Brief.class)
         String categoryName,
+        @JsonView(OutboundView.Detail.class)
+        String description,
         @JsonView(OutboundView.Brief.class)
         Integer availableQuantity,
         @JsonView(OutboundView.Detail.class)
