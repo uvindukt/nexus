@@ -6,6 +6,7 @@ import com.nexus.rag.application.mapper.ProductStockViewMapper;
 import com.nexus.rag.domain.exception.SearchPipelineException;
 import com.nexus.rag.domain.model.ProductStockView;
 import com.nexus.rag.domain.repository.ProductStockViewRepository;
+import com.nexus.rag.domain.service.PromptSanitizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
@@ -33,17 +34,20 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     private final ChatClient chatClient;
     private final ProductStockViewRepository productStockViewRepository;
     private final ProductStockViewMapper productStockViewMapper;
+    private final PromptSanitizer promptSanitizer;
 
     public ProductSearchServiceImpl(
             ChatClient.Builder chatClientBuilder,
             VectorStore vectorStore,
             ProductStockViewRepository productStockViewRepository,
             ProductStockViewMapper productStockViewMapper,
+            PromptSanitizer promptSanitizer,
             @Value("classpath:/prompts/rag-with-context.st") Resource contextResource
     ) {
 
         this.productStockViewRepository = productStockViewRepository;
         this.productStockViewMapper = productStockViewMapper;
+        this.promptSanitizer = promptSanitizer;
 
         // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
@@ -79,9 +83,12 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         try {
 
-            log.debug("User query received: {}", userQuery);
+            log.debug("User query: {}", userQuery);
 
-            ChatResponse chatResponse = chatClient.prompt(userQuery).call().chatResponse();
+            String sanitizedQuery = promptSanitizer.sanitizeQuery(userQuery);
+            log.debug("Sanitized query: {}", sanitizedQuery);
+
+            ChatResponse chatResponse = chatClient.prompt(sanitizedQuery).call().chatResponse();
             if (chatResponse == null || chatResponse.getResult() == null) {
                 throw new SearchPipelineException("Chat client failed");
             }
