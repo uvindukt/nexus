@@ -5,7 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/catalog
 logging:
   level:
-    com.yourcompany.project: DEBUG
+    root: DEBUG
   jpa:
     hibernate:
       ddl-auto: validate
