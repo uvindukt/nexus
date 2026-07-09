@@ -13,6 +13,7 @@ import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.rag.Query;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
 import org.springframework.ai.rag.generation.augmentation.QueryAugmenter;
@@ -42,7 +43,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
             ProductStockViewRepository productStockViewRepository,
             ProductStockViewMapper productStockViewMapper,
             PromptSanitizer promptSanitizer,
-            @Value("classpath:/prompts/rag-with-context.st") Resource contextResource
+            @Value("classpath:/prompts/rag-instructions.st") Resource ragInstructions,
+            @Value("classpath:/prompts/rag-query-transformer-instructions.st") Resource queryTransformerInstructions
     ) {
 
         this.productStockViewRepository = productStockViewRepository;
@@ -52,24 +54,46 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .similarityThreshold(0.5) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
-                .topK(1) // No. of similarity results (most similar)
+                .similarityThreshold(0.65) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
+                .topK(5) // No. of similarity results (most similar)
                 .build();
 
         // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)
         QueryTransformer rewriteTransformer = RewriteQueryTransformer.builder()
                 .chatClientBuilder(chatClientBuilder.build().mutate())
+                .promptTemplate(new PromptTemplate(queryTransformerInstructions))
+                .targetSearchSystem("VectorStore")
                 .build();
+
+        // Logging wrapper for QueryTransformer (Decorator)
+        QueryTransformer rewriteTransformerWithLogging = query -> {
+
+            try {
+
+                // Execute the first LLM call to rewrite the query
+                Query transformedQuery = rewriteTransformer.transform(query);
+
+                // Log the semantic conversion (.text() retrieves the modified string)
+                log.info("[SEARCH PIPELINE] Raw Input: \"{}\" -> Semantically Rewritten: \"{}\"", query.text(), transformedQuery.text());
+
+                return transformedQuery;
+
+            } catch (Exception e) {
+                log.error("[SEARCH PIPELINE] Failed to rewrite query: \"{}\"", query.text(), e);
+                throw e;
+            }
+
+        };
 
         // allowEmptyContext defaults to false: on no match, the model is instructed
         // not to answer rather than the call being skipped
         QueryAugmenter queryAugmenter = ContextualQueryAugmenter.builder()
-                .promptTemplate(new PromptTemplate(contextResource))
+                .promptTemplate(new PromptTemplate(ragInstructions))
                 .build();
 
         // Spring AI RAG Advisor wrapper configuration
         Advisor ragAdvisor = RetrievalAugmentationAdvisor.builder()
-                .queryTransformers(rewriteTransformer)
+                .queryTransformers(rewriteTransformerWithLogging)
                 .documentRetriever(retriever)
                 .queryAugmenter(queryAugmenter)
                 .build();
@@ -83,10 +107,10 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         try {
 
-            log.debug("User query: {}", userQuery);
+            log.info("[SEARCH PIPELINE] User query: \"{}\"", userQuery);
 
             String sanitizedQuery = promptSanitizer.sanitizeQuery(userQuery);
-            log.debug("Sanitized query: {}", sanitizedQuery);
+            log.info("[SEARCH PIPELINE] Sanitized query: \"{}\"", sanitizedQuery);
 
             ChatResponse chatResponse = chatClient.prompt(sanitizedQuery).call().chatResponse();
             if (chatResponse == null || chatResponse.getResult() == null) {
@@ -99,14 +123,14 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 answer = "No Answer";
             }
 
-            log.debug("Received LLM answer - {}", answer);
+            log.info("[SEARCH PIPELINE] Received LLM answer - \"{}\"", answer);
 
             List<Document> retrievedDocuments = chatResponse.getMetadata().get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT);
             if (retrievedDocuments == null || retrievedDocuments.isEmpty()) {
                 return new ProductSearchResponse(answer, null);
             }
 
-            log.debug("Found {} matching vectors", retrievedDocuments.size());
+            log.info("[SEARCH PIPELINE] Found {} matching vectors", retrievedDocuments.size());
 
             List<Long> productIds = retrievedDocuments.stream()
                     .map(doc -> Long.valueOf(doc.getMetadata().get("productId").toString()))
@@ -114,7 +138,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                     .toList();
 
             List<ProductStockView> products = productStockViewRepository.findByProductIdIn(productIds);
-            log.debug("Found {} products in database", products.size());
+            log.info("[SEARCH PIPELINE] Found {} products in database", products.size());
 
             List<ProductStockViewResponse> productDtoList = productStockViewMapper.toResponse(products);
 
