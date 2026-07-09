@@ -86,6 +86,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 throw new SearchPipelineException("Chat client failed");
             }
 
+            // Extract answer from LLM response
             String answer = chatResponse.getResult().getOutput().getText();
             if (answer == null) {
                 answer = "No Answer";
@@ -98,7 +99,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 return new ProductSearchResponse(answer, null);
             }
 
-            log.debug("Received Products");
+            log.debug("Found {} matching vectors", retrievedDocuments.size());
 
             List<Long> productIds = retrievedDocuments.stream()
                     .map(doc -> Long.valueOf(doc.getMetadata().get("productId").toString()))
@@ -106,6 +107,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                     .toList();
 
             List<ProductStockView> products = productStockViewRepository.findByProductIdIn(productIds);
+            log.debug("Found {} products in database", products.size());
+
             List<ProductStockViewResponse> productDtoList = productStockViewMapper.toResponse(products);
 
             return new ProductSearchResponse(answer, productDtoList);
