@@ -2,7 +2,6 @@ package com.nexus.rag.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexus.rag.application.mapper.ProductStockViewMapper;
 import com.nexus.rag.domain.exception.RagServiceException;
 import com.nexus.rag.domain.model.ProductStockView;
 import com.nexus.rag.domain.model.consumer.ProductEvent;
@@ -22,7 +21,6 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
 
     private final ProductStockViewRepository productStockViewRepository;
     private final ObjectMapper objectMapper;
-    private final ProductStockViewMapper productStockViewMapper;
     private final IngestionService ingestionService;
 
     @Transactional
