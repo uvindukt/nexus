@@ -79,7 +79,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         try {
 
-            log.info("User query received: {}", userQuery);
+            log.debug("User query received: {}", userQuery);
 
             ChatResponse chatResponse = chatClient.prompt(userQuery).call().chatResponse();
             if (chatResponse == null || chatResponse.getResult() == null) {
@@ -91,14 +91,14 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 answer = "No Answer";
             }
 
-            log.info("Received LLM answer - {}", answer);
+            log.debug("Received LLM answer - {}", answer);
 
             List<Document> retrievedDocuments = chatResponse.getMetadata().get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT);
             if (retrievedDocuments == null || retrievedDocuments.isEmpty()) {
                 return new ProductSearchResponse(answer, null);
             }
 
-            log.info("Received Products");
+            log.debug("Received Products");
 
             List<Long> productIds = retrievedDocuments.stream()
                     .map(doc -> Long.valueOf(doc.getMetadata().get("productId").toString()))
