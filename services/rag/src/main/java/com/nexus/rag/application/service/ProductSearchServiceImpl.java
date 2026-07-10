@@ -54,8 +54,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .similarityThreshold(0.65) // Similarity metric threshold (eg: cosine similarity) between 0 - 1, 1 being exactly same
-                .topK(5) // No. of similarity results (most similar)
+                .similarityThreshold(0.65)
+                .topK(5)
                 .build();
 
         // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)
@@ -85,8 +85,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         };
 
-        // allowEmptyContext defaults to false: on no match, the model is instructed
-        // not to answer rather than the call being skipped
+        // allowEmptyContext defaults to false: on no match, the model is instructed not to answer rather than the call being skipped
         QueryAugmenter queryAugmenter = ContextualQueryAugmenter.builder()
                 .promptTemplate(new PromptTemplate(ragInstructions))
                 .build();
