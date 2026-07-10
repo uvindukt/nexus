@@ -56,7 +56,7 @@ Cross-cutting infrastructure: PostgreSQL (with pgvector), Kafka + Debezium (CDC)
 ## Tech Stack
 
 - **Framework:** Spring Boot 4, Spring Cloud (Config, Eureka, Gateway, Stream/Kafka)
-- **AI/RAG:** Spring AI 2.0, Google Gemini (chat) + `text-embedding-004` (768-dim embeddings), pgvector with HNSW index (cosine distance)
+- **AI/RAG:** Spring AI 2.0, Google Gemini (chat) + `gemini-embedding-2` (768-dim embeddings), pgvector with HNSW index (cosine distance)
 - **Persistence:** PostgreSQL (`pgvector/pgvector:pg16`), Liquibase migrations, Spring Data JPA
 - **Messaging:** Apache Kafka, Debezium CDC (logical replication via `pgoutput`)
 - **Caching / Memory:** Redis (product cache in `catalog`, SSE pub/sub in `analytics`, chat conversation memory in `rag`)
