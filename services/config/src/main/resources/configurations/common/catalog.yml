@@ -23,6 +23,10 @@ spring:
           batch_size: 1000
           order_inserts: true
           order_updates: true
+        id:
+          optimizer:
+            pooled:
+              preferred: pooled-lo
   springdoc:
     writer-with-json-view: true
     model-and-view-allowed: true
