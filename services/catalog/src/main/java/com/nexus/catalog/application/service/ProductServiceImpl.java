@@ -19,7 +19,12 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,6 +58,40 @@ public class ProductServiceImpl implements ProductService {
         outboxService.productEvent(product, ProductEventType.PRODUCT_CREATED);
 
         return productMapper.toResponse(product);
+
+    }
+
+    @Transactional
+    @Override
+    public List<ProductResponse> createBatch(List<ProductRequest> productRequest) {
+
+        validateUniqueness(productRequest);
+
+        Set<Long> brandIds = productRequest.stream().map(ProductRequest::brandId).collect(Collectors.toSet());
+        List<Brand> brands = brandRepository.findAllById(brandIds);
+        if (brands.size() != brandIds.size()) {
+            Set<Long> missing = new HashSet<>(brandIds);
+            missing.addAll(brands.stream().map(Brand::getId).collect(Collectors.toSet()));
+            throw new EntryNotFoundException(Brand.class.getSimpleName(), missing.toString());
+        }
+
+        Set<Long> categoryIds = productRequest.stream().map(ProductRequest::categoryId).collect(Collectors.toSet());
+        List<Category> categories = categoryRepository.findAllById(categoryIds);
+        if (categories.size() != categoryIds.size()) {
+            Set<Long> missing = new HashSet<>(categoryIds);
+            missing.addAll(categories.stream().map(Category::getId).collect(Collectors.toSet()));
+            throw new EntryNotFoundException(Category.class.getSimpleName(), missing.toString());
+        }
+
+        List<Product> products = productRequest.stream()
+                .map(productMapper::toModel)
+                .toList();
+
+        List<Product> savedProducts = productRepository.saveAll(products);
+
+        return savedProducts.stream()
+                .map(productMapper::toResponse)
+                .toList();
 
     }
 
@@ -131,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getAll() {
 
-        return productMapper.toResponses(productRepository.findAll());
+        return productMapper.toResponse(productRepository.findAll());
 
     }
 
@@ -154,6 +193,51 @@ public class ProductServiceImpl implements ProductService {
 
                 throw new DuplicateEntryException(Product.class.getSimpleName(), field, value);
 
+            }
+
+        });
+
+    }
+
+    /**
+     * Checks if the Product SKU or Slug from the request list already exists in the DB or within the list.
+     * Throws {@link DuplicateEntryException}
+     *
+     * @param productRequest List of {@link ProductRequest} Objects with product data
+     */
+    @NullMarked
+    private void validateUniqueness(List<ProductRequest> productRequest) {
+
+        // 1. Catch duplicates within the batch itself
+        Set<String> seenSkus = new HashSet<>();
+        Set<String> seenSlugs = new HashSet<>();
+        for (ProductRequest req : productRequest) {
+            if (!seenSkus.add(req.sku())) {
+                throw new DuplicateEntryException(Product.class.getSimpleName(), SKU, req.sku());
+            }
+            if (!seenSlugs.add(req.slug())) {
+                throw new DuplicateEntryException(Product.class.getSimpleName(), SLUG, req.slug());
+            }
+        }
+
+        // 2. Batch-check against existing DB rows
+        List<String> skus = productRequest.stream().map(ProductRequest::sku).toList();
+        List<String> slugs = productRequest.stream().map(ProductRequest::slug).toList();
+
+        List<Product> conflicts = productRepository.findBySkuInOrSlugIn(skus, slugs);
+
+        Map<Long, ProductRequest> requestsById = productRequest.stream().filter(r -> r.id() != null).collect(Collectors.toMap(ProductRequest::id, Function.identity()));
+
+        conflicts.forEach(product -> {
+
+            ProductRequest matchingRequest = requestsById.get(product.getId());
+            boolean isSelf = matchingRequest != null; // same product being updated, not a real conflict
+
+            if (!isSelf) {
+                boolean skuMatch = productRequest.stream().anyMatch(r -> product.getSku().equalsIgnoreCase(r.sku()));
+                String field = skuMatch ? SKU : SLUG;
+                String value = skuMatch ? product.getSku() : product.getSlug();
+                throw new DuplicateEntryException(Product.class.getSimpleName(), field, value);
             }
 
         });

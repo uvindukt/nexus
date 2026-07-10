@@ -18,6 +18,8 @@ public interface ProductMapper {
 
     Product toModel(ProductRequest request);
 
+    List<Product> toModel(List<ProductRequest> request);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -25,6 +27,6 @@ public interface ProductMapper {
 
     ProductResponse toResponse(Product product);
 
-    List<ProductResponse> toResponses(List<Product> products);
+    List<ProductResponse> toResponse(List<Product> products);
 
 }

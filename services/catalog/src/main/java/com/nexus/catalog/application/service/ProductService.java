@@ -17,6 +17,14 @@ public interface ProductService {
     ProductResponse create(ProductRequest productRequest);
 
     /**
+     * Creates multiple {@link Product} objects and persist in database
+     *
+     * @param productRequests List of {@link ProductRequest} objects containing product data
+     * @return List of {@link ProductResponse} objects containing created products data
+     */
+    List<ProductResponse> createBatch(List<ProductRequest> productRequests);
+
+    /**
      * Updates a {@link Product} object with provided data and persist in database
      *
      * @param productId      Product ID

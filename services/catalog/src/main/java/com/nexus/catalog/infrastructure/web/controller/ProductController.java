@@ -34,6 +34,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(productRequest));
     }
 
+    @PostMapping(ApiConstants.BATCH)
+    @JsonView(OutboundView.Detail.class)
+    @Operation(summary = "openapi.product.createBatch.sum", description = "openapi.product.createBatch.desc")
+    public ResponseEntity<List<ProductResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<ProductRequest> productRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createBatch(productRequest));
+    }
+
     @GetMapping
     @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.product.findAll.sum", description = "openapi.product.findAll.desc")
