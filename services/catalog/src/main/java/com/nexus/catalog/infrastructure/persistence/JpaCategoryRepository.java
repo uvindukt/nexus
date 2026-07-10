@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface JpaCategoryRepository extends JpaRepository<Category, Long>, Ca
     @Override
     @EntityGraph(attributePaths = {"parent", "subCategories"})
     List<Category> findByNameOrSlug(String name, String slug);
+
+    List<Category> findByNameInOrSlugIn(Collection<String> names, Collection<String> slugs);
 
     @Override
     @EntityGraph(attributePaths = {"parent", "subCategories"})

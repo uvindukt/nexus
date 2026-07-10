@@ -4,6 +4,7 @@ import com.nexus.catalog.domain.model.Category;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,8 @@ public interface CategoryRepository extends ListCrudRepository<Category, Long> {
     Optional<Category> findByName(String name);
 
     List<Category> findByNameOrSlug(String name, String slug);
+
+    List<Category> findByNameInOrSlugIn(Collection<String> names, Collection<String> slugs);
 
     boolean existsDescendant(Long rootId, Long targetId);
 
