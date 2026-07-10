@@ -34,6 +34,13 @@ public class BrandServiceImpl implements BrandService {
 
     @Transactional
     @Override
+    public List<BrandResponse> createBatch(List<BrandRequest> brandRequest) {
+        brandRequest.forEach(this::validateUniqueness);
+        return brandMapper.toResponse(brandRepository.saveAll(brandMapper.toModel(brandRequest)));
+    }
+
+    @Transactional
+    @Override
     public BrandResponse update(Long brandId, BrandRequest brandRequest) {
 
         return brandRepository.findById(brandId)
@@ -86,7 +93,7 @@ public class BrandServiceImpl implements BrandService {
     @Transactional(readOnly = true)
     @Override
     public List<BrandResponse> getAll() {
-        return brandMapper.toResponses(brandRepository.findAll());
+        return brandMapper.toResponse(brandRepository.findAll());
     }
 
     /**

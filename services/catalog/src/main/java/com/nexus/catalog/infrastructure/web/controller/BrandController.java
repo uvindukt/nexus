@@ -34,6 +34,13 @@ public class BrandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.create(brandRequest));
     }
 
+    @PostMapping(ApiConstants.BATCH)
+    @JsonView(OutboundView.Detail.class)
+    @Operation(summary = "openapi.brand.createBatch.sum", description = "openapi.brand.createBatch.desc")
+    public ResponseEntity<List<BrandResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<BrandRequest> brandRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(brandService.createBatch(brandRequest));
+    }
+
     @GetMapping
     @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.brand.getAll.sum", description = "openapi.brand.getAll.desc")

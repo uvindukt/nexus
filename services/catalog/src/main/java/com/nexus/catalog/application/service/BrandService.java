@@ -17,6 +17,14 @@ public interface BrandService {
     BrandResponse create(BrandRequest brandRequest);
 
     /**
+     * Creates multiple {@link Brand} objects and persist in database
+     *
+     * @param brandRequest {@link List<BrandRequest>} object containing brand data
+     * @return {@link List<BrandResponse>} object containing created brands data
+     */
+    List<BrandResponse> createBatch(List<BrandRequest> brandRequest);
+
+    /**
      * Updates a {@link Brand} object with provided data and persist in database
      *
      * @param brandId      Brand ID

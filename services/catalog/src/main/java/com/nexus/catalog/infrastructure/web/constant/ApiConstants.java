@@ -6,6 +6,7 @@ public final class ApiConstants {
     }
 
     public static final String V1 = "/v1";
+    public static final String BATCH = "/batch";
     public static final String ID = "/{id}";
 
     public static final class Categories {

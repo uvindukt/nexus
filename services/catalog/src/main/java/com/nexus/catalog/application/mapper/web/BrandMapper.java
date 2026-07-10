@@ -17,6 +17,8 @@ public interface BrandMapper {
 
     Brand toModel(BrandRequest request);
 
+    List<Brand> toModel(List<BrandRequest> brandRequests);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "products", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
@@ -24,6 +26,6 @@ public interface BrandMapper {
 
     BrandResponse toResponse(Brand brand);
 
-    List<BrandResponse> toResponses(List<Brand> brands);
+    List<BrandResponse> toResponse(List<Brand> brands);
 
 }
