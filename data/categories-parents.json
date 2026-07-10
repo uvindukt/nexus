@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Electronics",
+    "slug": "electronics",
+    "active": true
+  },
+  {
+    "name": "Clothing & Apparel",
+    "slug": "clothing-and-apparel",
+    "active": true
+  },
+  {
+    "name": "Home & Garden",
+    "slug": "home-and-garden",
+    "active": true
+  },
+  {
+    "name": "Sports & Outdoors",
+    "slug": "sports-and-outdoors",
+    "active": true
+  },
+  {
+    "name": "Books & Media",
+    "slug": "books-and-media",
+    "active": true
+  },
+  {
+    "name": "Toys & Games",
+    "slug": "toys-and-games",
+    "active": true
+  },
+  {
+    "name": "Beauty & Personal Care",
+    "slug": "beauty-and-personal-care",
+    "active": true
+  },
+  {
+    "name": "Automotive",
+    "slug": "automotive",
+    "active": true
+  },
+  {
+    "name": "Food & Beverage",
+    "slug": "food-and-beverage",
+    "active": true
+  },
+  {
+    "name": "Office & Stationery",
+    "slug": "office-and-stationery",
+    "active": true
+  }
+]

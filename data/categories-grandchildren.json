@@ -1,0 +1,362 @@
+[
+  {
+    "name": "Laptops",
+    "slug": "laptops",
+    "parentId": 11,
+    "active": true
+  },
+  {
+    "name": "Desktop PCs",
+    "slug": "desktop-pcs",
+    "parentId": 11,
+    "active": true
+  },
+  {
+    "name": "Smartphones",
+    "slug": "smartphones",
+    "parentId": 12,
+    "active": true
+  },
+  {
+    "name": "Phone Cases",
+    "slug": "phone-cases",
+    "parentId": 12,
+    "active": true
+  },
+  {
+    "name": "Headphones",
+    "slug": "headphones",
+    "parentId": 13,
+    "active": true
+  },
+  {
+    "name": "Bluetooth Speakers",
+    "slug": "bluetooth-speakers",
+    "parentId": 13,
+    "active": true
+  },
+  {
+    "name": "Men's Shirts",
+    "slug": "mens-shirts",
+    "parentId": 14,
+    "active": true
+  },
+  {
+    "name": "Men's Pants",
+    "slug": "mens-pants",
+    "parentId": 14,
+    "active": true
+  },
+  {
+    "name": "Women's Dresses",
+    "slug": "womens-dresses",
+    "parentId": 15,
+    "active": true
+  },
+  {
+    "name": "Women's Tops",
+    "slug": "womens-tops",
+    "parentId": 15,
+    "active": true
+  },
+  {
+    "name": "Boys' Clothing",
+    "slug": "boys-clothing",
+    "parentId": 16,
+    "active": true
+  },
+  {
+    "name": "Girls' Clothing",
+    "slug": "girls-clothing",
+    "parentId": 16,
+    "active": true
+  },
+  {
+    "name": "Living Room Furniture",
+    "slug": "living-room-furniture",
+    "parentId": 17,
+    "active": true
+  },
+  {
+    "name": "Bedroom Furniture",
+    "slug": "bedroom-furniture",
+    "parentId": 17,
+    "active": true
+  },
+  {
+    "name": "Cookware",
+    "slug": "cookware",
+    "parentId": 18,
+    "active": true
+  },
+  {
+    "name": "Kitchen Utensils",
+    "slug": "kitchen-utensils",
+    "parentId": 18,
+    "active": true
+  },
+  {
+    "name": "Hand Tools",
+    "slug": "hand-tools",
+    "parentId": 19,
+    "active": true
+  },
+  {
+    "name": "Power Tools",
+    "slug": "power-tools",
+    "parentId": 19,
+    "active": true
+  },
+  {
+    "name": "Cardio Machines",
+    "slug": "cardio-machines",
+    "parentId": 20,
+    "active": true
+  },
+  {
+    "name": "Weights & Strength",
+    "slug": "weights-and-strength",
+    "parentId": 20,
+    "active": true
+  },
+  {
+    "name": "Tents",
+    "slug": "tents",
+    "parentId": 21,
+    "active": true
+  },
+  {
+    "name": "Backpacks",
+    "slug": "backpacks",
+    "parentId": 21,
+    "active": true
+  },
+  {
+    "name": "Soccer Gear",
+    "slug": "soccer-gear",
+    "parentId": 22,
+    "active": true
+  },
+  {
+    "name": "Basketball Gear",
+    "slug": "basketball-gear",
+    "parentId": 22,
+    "active": true
+  },
+  {
+    "name": "Fantasy Novels",
+    "slug": "fantasy-novels",
+    "parentId": 23,
+    "active": true
+  },
+  {
+    "name": "Mystery Novels",
+    "slug": "mystery-novels",
+    "parentId": 23,
+    "active": true
+  },
+  {
+    "name": "Biographies",
+    "slug": "biographies",
+    "parentId": 24,
+    "active": true
+  },
+  {
+    "name": "Self-Help",
+    "slug": "self-help",
+    "parentId": 24,
+    "active": true
+  },
+  {
+    "name": "DVDs & Blu-rays",
+    "slug": "dvds-and-blu-rays",
+    "parentId": 25,
+    "active": true
+  },
+  {
+    "name": "Vinyl Records",
+    "slug": "vinyl-records",
+    "parentId": 25,
+    "active": true
+  },
+  {
+    "name": "Strategy Games",
+    "slug": "strategy-games",
+    "parentId": 26,
+    "active": true
+  },
+  {
+    "name": "Family Games",
+    "slug": "family-games",
+    "parentId": 26,
+    "active": true
+  },
+  {
+    "name": "Superhero Figures",
+    "slug": "superhero-figures",
+    "parentId": 27,
+    "active": true
+  },
+  {
+    "name": "Anime Figures",
+    "slug": "anime-figures",
+    "parentId": 27,
+    "active": true
+  },
+  {
+    "name": "STEM Kits",
+    "slug": "stem-kits",
+    "parentId": 28,
+    "active": true
+  },
+  {
+    "name": "Puzzles",
+    "slug": "puzzles",
+    "parentId": 28,
+    "active": true
+  },
+  {
+    "name": "Moisturizers",
+    "slug": "moisturizers",
+    "parentId": 29,
+    "active": true
+  },
+  {
+    "name": "Cleansers",
+    "slug": "cleansers",
+    "parentId": 29,
+    "active": true
+  },
+  {
+    "name": "Shampoo & Conditioner",
+    "slug": "shampoo-and-conditioner",
+    "parentId": 30,
+    "active": true
+  },
+  {
+    "name": "Styling Products",
+    "slug": "styling-products",
+    "parentId": 30,
+    "active": true
+  },
+  {
+    "name": "Face Makeup",
+    "slug": "face-makeup",
+    "parentId": 31,
+    "active": true
+  },
+  {
+    "name": "Eye Makeup",
+    "slug": "eye-makeup",
+    "parentId": 31,
+    "active": true
+  },
+  {
+    "name": "Engine Parts",
+    "slug": "engine-parts",
+    "parentId": 32,
+    "active": true
+  },
+  {
+    "name": "Brake Systems",
+    "slug": "brake-systems",
+    "parentId": 32,
+    "active": true
+  },
+  {
+    "name": "Interior Accessories",
+    "slug": "interior-accessories",
+    "parentId": 33,
+    "active": true
+  },
+  {
+    "name": "Exterior Accessories",
+    "slug": "exterior-accessories",
+    "parentId": 33,
+    "active": true
+  },
+  {
+    "name": "Helmets",
+    "slug": "helmets",
+    "parentId": 34,
+    "active": true
+  },
+  {
+    "name": "Riding Jackets",
+    "slug": "riding-jackets",
+    "parentId": 34,
+    "active": true
+  },
+  {
+    "name": "Chips & Crisps",
+    "slug": "chips-and-crisps",
+    "parentId": 35,
+    "active": true
+  },
+  {
+    "name": "Chocolate & Candy",
+    "slug": "chocolate-and-candy",
+    "parentId": 35,
+    "active": true
+  },
+  {
+    "name": "Coffee & Tea",
+    "slug": "coffee-and-tea",
+    "parentId": 36,
+    "active": true
+  },
+  {
+    "name": "Soft Drinks",
+    "slug": "soft-drinks",
+    "parentId": 36,
+    "active": true
+  },
+  {
+    "name": "Sauces & Condiments",
+    "slug": "sauces-and-condiments",
+    "parentId": 37,
+    "active": true
+  },
+  {
+    "name": "Specialty Oils",
+    "slug": "specialty-oils",
+    "parentId": 37,
+    "active": true
+  },
+  {
+    "name": "Pens & Pencils",
+    "slug": "pens-and-pencils",
+    "parentId": 38,
+    "active": true
+  },
+  {
+    "name": "Markers & Highlighters",
+    "slug": "markers-and-highlighters",
+    "parentId": 38,
+    "active": true
+  },
+  {
+    "name": "Notebooks",
+    "slug": "notebooks",
+    "parentId": 39,
+    "active": true
+  },
+  {
+    "name": "Printer Paper",
+    "slug": "printer-paper",
+    "parentId": 39,
+    "active": true
+  },
+  {
+    "name": "Desks",
+    "slug": "desks",
+    "parentId": 40,
+    "active": true
+  },
+  {
+    "name": "Office Chairs",
+    "slug": "office-chairs",
+    "parentId": 40,
+    "active": true
+  }
+]
