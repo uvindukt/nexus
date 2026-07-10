@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @NullMarked
@@ -19,7 +20,8 @@ import java.util.Set;
 public class Brand {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brand_seq")
+    @SequenceGenerator(name = "brand_seq", sequenceName = "brand_seq", allocationSize = 20)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -35,8 +37,9 @@ public class Brand {
     @Builder.Default
     private Boolean active = true;
 
+    @Builder.Default
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-    private Set<Product> products;
+    private Set<Product> products = new LinkedHashSet<>();
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

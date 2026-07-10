@@ -22,10 +22,19 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(
+        name = "product",
+        indexes = {
+                @Index(name = "idx_product_brand_id", columnList = "brand_id"),
+                @Index(name = "idx_product_category_id", columnList = "category_id"),
+                @Index(name = "idx_product_status", columnList = "status")
+        }
+)
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
+    @SequenceGenerator(name = "product_seq", sequenceName = "product_seq", allocationSize = 1000)
     @Column(nullable = false)
     private Long id;
 
@@ -45,6 +54,7 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ProductStatus status = ProductStatus.DRAFT;

@@ -15,10 +15,17 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(
+        name = "category",
+        indexes = {
+                @Index(name = "idx_category_parent_id", columnList = "parent_id")
+        }
+)
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
+    @SequenceGenerator(name = "category_seq", sequenceName = "category_seq", allocationSize = 100)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -35,6 +42,7 @@ public class Category {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Category> subCategories = new HashSet<>();
 
+    @Builder.Default
     private Boolean active = true;
 
 }
