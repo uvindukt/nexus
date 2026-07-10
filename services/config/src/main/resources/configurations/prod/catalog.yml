@@ -2,7 +2,7 @@ spring:
   datasource:
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5432/catalog
+    url: jdbc:postgresql://localhost:5432/catalog?reWriteBatchedInserts=true
   jpa:
     hibernate:
       ddl-auto: validate
