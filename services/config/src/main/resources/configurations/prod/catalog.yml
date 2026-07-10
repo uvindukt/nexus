@@ -11,7 +11,7 @@ spring:
       hibernate:
         temp.use_jdbc_metadata_defaults: true
         jdbc:
-          fetch_size: 50
+          fetch_size: 100
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   data:

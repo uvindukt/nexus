@@ -16,6 +16,13 @@ spring:
   threads:
     virtual:
       enabled: true
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 1000
+          order_inserts: true
+          order_updates: true
   springdoc:
     writer-with-json-view: true
     model-and-view-allowed: true
