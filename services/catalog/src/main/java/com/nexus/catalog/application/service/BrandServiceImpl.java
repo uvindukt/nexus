@@ -13,7 +13,9 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -35,7 +37,7 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     @Override
     public List<BrandResponse> createBatch(List<BrandRequest> brandRequest) {
-        brandRequest.forEach(this::validateUniqueness);
+        validateBatchUniqueness(brandRequest);
         return brandMapper.toResponse(brandRepository.saveAll(brandMapper.toModel(brandRequest)));
     }
 
@@ -112,6 +114,32 @@ public class BrandServiceImpl implements BrandService {
                     }
                 });
 
+    }
+
+    /**
+     * Checks if the Brand Names from the request object already exists in the DB
+     * Throws {@link DuplicateEntryException}
+     *
+     * @param brandRequest List of {@link BrandRequest} Objects with brand data
+     */
+    private void validateBatchUniqueness(List<BrandRequest> brandRequest) {
+        List<String> names = brandRequest.stream().map(BrandRequest::name).toList();
+
+        // duplicates within the incoming batch itself
+        Set<String> seen = new HashSet<>();
+        names.stream()
+                .filter(n -> !seen.add(n))
+                .findFirst()
+                .ifPresent(dup -> {
+                    throw new DuplicateEntryException(Brand.class.getSimpleName(), NAME, dup);
+                });
+
+        // duplicates against what's already persisted — single query, not N
+        brandRepository.findByNameIn(names).stream()
+                .findFirst()
+                .ifPresent(existing -> {
+                    throw new DuplicateEntryException(Brand.class.getSimpleName(), NAME, existing.getName());
+                });
     }
 
 }
