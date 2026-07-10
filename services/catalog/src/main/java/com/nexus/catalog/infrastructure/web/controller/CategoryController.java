@@ -34,6 +34,13 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.create(categoryRequest));
     }
 
+    @PostMapping(ApiConstants.BATCH)
+    @JsonView(OutboundView.Detail.class)
+    @Operation(summary = "openapi.category.createBatch.sum", description = "openapi.category.createBatch.desc")
+    public ResponseEntity<List<CategoryResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<CategoryRequest> categoryRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createBatch(categoryRequest));
+    }
+
     @GetMapping
     @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.category.findAll.sum", description = "openapi.category.findAll.desc")

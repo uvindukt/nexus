@@ -16,6 +16,14 @@ public interface CategoryService {
     CategoryResponse create(CategoryRequest categoryRequest);
 
     /**
+     * Creates multiple {@link com.nexus.catalog.domain.model.Category} objects and persist in database
+     *
+     * @param categoryRequest {@link java.util.List<CategoryRequest>} object containing categories data
+     * @return {@link java.util.List<CategoryResponse>} object containing created categories data
+     */
+    List<CategoryResponse> createBatch(List<CategoryRequest> categoryRequest);
+
+    /**
      * Updates a {@link com.nexus.catalog.domain.model.Category} object with provided data and persist in database
      *
      * @param categoryId      Category ID
