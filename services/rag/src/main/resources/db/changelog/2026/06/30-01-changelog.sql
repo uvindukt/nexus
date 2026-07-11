@@ -34,7 +34,7 @@ CREATE TABLE product_stock_view
 (
     product_id         BIGINT NOT NULL,
     product_name       VARCHAR(255),
-    description        VARCHAR(255),
+    description        TEXT,
     slug               VARCHAR(255),
     sku                VARCHAR(255),
     price              DECIMAL,
