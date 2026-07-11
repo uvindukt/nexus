@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public abstract class AbstractOutbox {
+public abstract class AbstractOutbox implements Persistable<UUID> {
 
     @Builder.Default
     @Id
@@ -49,8 +50,28 @@ public abstract class AbstractOutbox {
 
     protected Instant processedAt;
 
+    @Transient
+    @Builder.Default
+    private boolean isNew = true;
+
     public void setType(OutboxEventType outboxEventType) {
         this.type = outboxEventType.name();
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    @PostPersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
+
+    @Override
+    public UUID getId() {
+        return id;
     }
 
 }
