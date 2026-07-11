@@ -1,5 +1,6 @@
 package com.nexus.rag.domain.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
@@ -19,6 +20,7 @@ public class ProductStockView {
     @Id
     private Long productId;
     private String productName;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String slug;
     private String sku;
