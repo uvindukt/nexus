@@ -8,4 +8,4 @@ eureka:
       defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}/eureka
 logging:
   level:
-    root: DEBUG
+    root: INFO
