@@ -28,7 +28,7 @@ public interface CategoryMapper {
     @Mapping(target = "parent", qualifiedByName = TO_BRIEF_RESPONSE)
     CategoryResponse toResponse(Category category);
 
-    // Maps without subCategories for parent recursively
+    // Maps parent category recursively without sub categories
     @Named(TO_BRIEF_RESPONSE)
     @Mapping(target = "subCategories", ignore = true)
     @Mapping(target = "parent", qualifiedByName = TO_BRIEF_RESPONSE)
