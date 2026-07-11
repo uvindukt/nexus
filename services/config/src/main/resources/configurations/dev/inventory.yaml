@@ -5,7 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/inventory
 logging:
   level:
-    root: DEBUG
+    root: INFO
   jpa:
     hibernate:
       ddl-auto: validate
