@@ -23,4 +23,6 @@ public interface CategoryRepository extends ListCrudRepository<Category, Long> {
 
     boolean existsDescendant(Long rootId, Long targetId);
 
+    List<Category> findAllByIdIn(Collection<Long> ids);
+
 }
