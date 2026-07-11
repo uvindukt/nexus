@@ -6,6 +6,7 @@ import com.nexus.catalog.application.dto.web.OutboundView;
 import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
 import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.service.CategoryService;
 import com.nexus.catalog.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,9 +36,9 @@ public class CategoryController {
     }
 
     @PostMapping(ApiConstants.BATCH)
-    @JsonView(OutboundView.Detail.class)
+    @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.category.createBatch.sum", description = "openapi.category.createBatch.desc")
-    public ResponseEntity<List<CategoryResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<CategoryRequest> categoryRequest) {
+    public ResponseEntity<GenericBatchOperationResponse> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<CategoryRequest> categoryRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createBatch(categoryRequest));
     }
 

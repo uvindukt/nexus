@@ -5,6 +5,7 @@ import com.nexus.catalog.application.dto.web.InboundView;
 import com.nexus.catalog.application.dto.web.OutboundView;
 import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.request.v1.ProductRequest;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.dto.web.response.v1.ProductResponse;
 import com.nexus.catalog.application.service.ProductService;
 import com.nexus.catalog.infrastructure.web.constant.ApiConstants;
@@ -35,9 +36,9 @@ public class ProductController {
     }
 
     @PostMapping(ApiConstants.BATCH)
-    @JsonView(OutboundView.Detail.class)
+    @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.product.createBatch.sum", description = "openapi.product.createBatch.desc")
-    public ResponseEntity<List<ProductResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<ProductRequest> productRequest) {
+    public ResponseEntity<GenericBatchOperationResponse> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<ProductRequest> productRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createBatch(productRequest));
     }
 

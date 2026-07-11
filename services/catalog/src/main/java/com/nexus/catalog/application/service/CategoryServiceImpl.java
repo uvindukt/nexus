@@ -1,7 +1,9 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
+import com.nexus.catalog.application.dto.web.response.v1.BatchOperationType;
 import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.mapper.web.CategoryMapper;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
@@ -25,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     public static final String NAME = "Name";
     public static final String SLUG = "Slug";
+    private static final String BATCH_CATEGORY_INSERT_SUCCESS = "Category batch insert successful";
 
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
@@ -48,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public List<CategoryResponse> createBatch(List<CategoryRequest> categoryRequest) {
+    public GenericBatchOperationResponse createBatch(List<CategoryRequest> categoryRequest) {
 
         validateUniqueness(categoryRequest);
 
@@ -57,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        Map<Long, Category> parentsById = categoryRepository.findAllById(parentIds).stream()
+        Map<Long, Category> parentsById = categoryRepository.findAllByIdIn(parentIds).stream()
                 .collect(Collectors.toMap(Category::getId, Function.identity()));
 
         // Filter out missing parent IDs
@@ -75,7 +78,9 @@ public class CategoryServiceImpl implements CategoryService {
             return category;
         }).toList();
 
-        return categoryMapper.toResponse(categoryRepository.saveAll(categories));
+        List<Category> savedCategories = categoryRepository.saveAll(categories);
+        log.info("Created {} categories", savedCategories.size());
+        return new GenericBatchOperationResponse(BatchOperationType.INSERT, savedCategories.size(), BATCH_CATEGORY_INSERT_SUCCESS);
 
     }
 

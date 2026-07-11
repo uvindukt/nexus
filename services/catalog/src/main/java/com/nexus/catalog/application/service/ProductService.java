@@ -1,6 +1,7 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.ProductRequest;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.dto.web.response.v1.ProductResponse;
 import com.nexus.catalog.domain.model.Product;
 
@@ -20,9 +21,9 @@ public interface ProductService {
      * Creates multiple {@link Product} objects and persist in database
      *
      * @param productRequests List of {@link ProductRequest} objects containing product data
-     * @return List of {@link ProductResponse} objects containing created products data
+     * @return List of {@link GenericBatchOperationResponse} objects containing batch operation data
      */
-    List<ProductResponse> createBatch(List<ProductRequest> productRequests);
+    GenericBatchOperationResponse createBatch(List<ProductRequest> productRequests);
 
     /**
      * Updates a {@link Product} object with provided data and persist in database

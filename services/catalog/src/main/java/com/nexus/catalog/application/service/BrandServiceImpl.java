@@ -1,7 +1,9 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.BrandRequest;
+import com.nexus.catalog.application.dto.web.response.v1.BatchOperationType;
 import com.nexus.catalog.application.dto.web.response.v1.BrandResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.mapper.web.BrandMapper;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
 import com.nexus.catalog.domain.exception.EntryNotFoundException;
@@ -22,7 +24,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BrandServiceImpl implements BrandService {
 
-    public static final String NAME = "Name";
+    private static final String NAME = "Name";
+    private static final String BATCH_BRAND_INSERT_SUCCESS = "Brand batch insert successful";
 
     private final BrandMapper brandMapper;
     private final BrandRepository brandRepository;
@@ -36,9 +39,11 @@ public class BrandServiceImpl implements BrandService {
 
     @Transactional
     @Override
-    public List<BrandResponse> createBatch(List<BrandRequest> brandRequest) {
+    public GenericBatchOperationResponse createBatch(List<BrandRequest> brandRequest) {
         validateBatchUniqueness(brandRequest);
-        return brandMapper.toResponse(brandRepository.saveAll(brandMapper.toModel(brandRequest)));
+        List<Brand> brands = brandRepository.saveAll(brandMapper.toModel(brandRequest));
+        log.info("Created {} brands", brands.size());
+        return new GenericBatchOperationResponse(BatchOperationType.INSERT, brands.size(), BATCH_BRAND_INSERT_SUCCESS);
     }
 
     @Transactional

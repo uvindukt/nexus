@@ -2,6 +2,7 @@ package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.CategoryRequest;
 import com.nexus.catalog.application.dto.web.response.v1.CategoryResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ public interface CategoryService {
      * Creates multiple {@link com.nexus.catalog.domain.model.Category} objects and persist in database
      *
      * @param categoryRequest {@link java.util.List<CategoryRequest>} object containing categories data
-     * @return {@link java.util.List<CategoryResponse>} object containing created categories data
+     * @return {@link GenericBatchOperationResponse} object containing batch operation data
      */
-    List<CategoryResponse> createBatch(List<CategoryRequest> categoryRequest);
+    GenericBatchOperationResponse createBatch(List<CategoryRequest> categoryRequest);
 
     /**
      * Updates a {@link com.nexus.catalog.domain.model.Category} object with provided data and persist in database

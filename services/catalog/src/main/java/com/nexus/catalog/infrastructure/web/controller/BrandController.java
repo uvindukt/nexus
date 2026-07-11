@@ -6,6 +6,7 @@ import com.nexus.catalog.application.dto.web.OutboundView;
 import com.nexus.catalog.application.dto.web.Validate;
 import com.nexus.catalog.application.dto.web.request.v1.BrandRequest;
 import com.nexus.catalog.application.dto.web.response.v1.BrandResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.service.BrandService;
 import com.nexus.catalog.infrastructure.web.constant.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,9 +36,9 @@ public class BrandController {
     }
 
     @PostMapping(ApiConstants.BATCH)
-    @JsonView(OutboundView.Detail.class)
+    @JsonView(OutboundView.Brief.class)
     @Operation(summary = "openapi.brand.createBatch.sum", description = "openapi.brand.createBatch.desc")
-    public ResponseEntity<List<BrandResponse>> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<BrandRequest> brandRequest) {
+    public ResponseEntity<GenericBatchOperationResponse> createBatch(@JsonView(InboundView.Create.class) @Validated(Validate.Create.class) @RequestBody List<BrandRequest> brandRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.createBatch(brandRequest));
     }
 

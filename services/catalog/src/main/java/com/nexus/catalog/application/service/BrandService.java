@@ -2,6 +2,7 @@ package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.BrandRequest;
 import com.nexus.catalog.application.dto.web.response.v1.BrandResponse;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.domain.model.Brand;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public interface BrandService {
      * Creates multiple {@link Brand} objects and persist in database
      *
      * @param brandRequest {@link List<BrandRequest>} object containing brand data
-     * @return {@link List<BrandResponse>} object containing created brands data
+     * @return {@link GenericBatchOperationResponse} object containing batch operation data
      */
-    List<BrandResponse> createBatch(List<BrandRequest> brandRequest);
+    GenericBatchOperationResponse createBatch(List<BrandRequest> brandRequest);
 
     /**
      * Updates a {@link Brand} object with provided data and persist in database

@@ -1,6 +1,8 @@
 package com.nexus.catalog.application.service;
 
 import com.nexus.catalog.application.dto.web.request.v1.ProductRequest;
+import com.nexus.catalog.application.dto.web.response.v1.BatchOperationType;
+import com.nexus.catalog.application.dto.web.response.v1.GenericBatchOperationResponse;
 import com.nexus.catalog.application.dto.web.response.v1.ProductResponse;
 import com.nexus.catalog.application.mapper.web.ProductMapper;
 import com.nexus.catalog.domain.exception.DuplicateEntryException;
@@ -33,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     public static final String SKU = "SKU";
     public static final String SLUG = "Slug";
+    private static final String BATCH_PRODUCT_INSERT_SUCCESS = "Product batch insert successful";
 
     private final ProductRepository productRepository;
     private final CachedProductRepository cachedProductRepository;
@@ -63,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public List<ProductResponse> createBatch(List<ProductRequest> productRequest) {
+    public GenericBatchOperationResponse createBatch(List<ProductRequest> productRequest) {
 
         validateUniqueness(productRequest);
 
@@ -88,10 +91,8 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
 
         List<Product> savedProducts = productRepository.saveAll(products);
-
-        return savedProducts.stream()
-                .map(productMapper::toResponse)
-                .toList();
+        log.info("Created {} products", savedProducts.size());
+        return new GenericBatchOperationResponse(BatchOperationType.INSERT, savedProducts.size(), BATCH_PRODUCT_INSERT_SUCCESS);
 
     }
 
