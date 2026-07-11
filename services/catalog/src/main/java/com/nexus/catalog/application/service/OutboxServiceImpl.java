@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,6 +56,34 @@ public class OutboxServiceImpl implements OutboxService {
                 .build();
 
         outboxRepository.save(outbox);
+
+    }
+
+    @Transactional
+    @Override
+    public void productEvent(List<Product> products, OutboxEventType outboxEventType) {
+
+        List<Outbox> outboxes = products.stream()
+                .map(product -> {
+
+                    String payload;
+
+                    try {
+                        payload = objectMapper.writeValueAsString(productPayloadMapper.toPayload(product));
+                    } catch (JsonProcessingException e) {
+                        throw new OutboxPublishException(e, product.getId());
+                    }
+
+                    return Outbox.builder()
+                            .type(outboxEventType.name())
+                            .aggregateType(Product.class.getSimpleName())
+                            .aggregateId(String.valueOf(product.getId()))
+                            .payload(payload)
+                            .build();
+
+                }).collect(Collectors.toList());
+
+        outboxRepository.saveAll(outboxes);
 
     }
 

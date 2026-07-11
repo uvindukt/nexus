@@ -5,6 +5,7 @@ import com.nexus.shared.common.OutboxEventType;
 import com.nexus.catalog.domain.model.Product;
 
 import java.time.Instant;
+import java.util.List;
 
 public interface OutboxService {
 
@@ -15,6 +16,14 @@ public interface OutboxService {
      * @param outboxEventType Type of event eg: PRODUCT_CREATED, PRODUCT_UPDATED etc.
      */
     void productEvent(Product product, OutboxEventType outboxEventType);
+
+    /**
+     * Saves {@link Outbox} entities related to the provided list of {@link Product}s
+     *
+     * @param products        List of Product objects
+     * @param outboxEventType Type of event eg: PRODUCT_CREATED, PRODUCT_UPDATED etc.
+     */
+    void productEvent(List<Product> products, OutboxEventType outboxEventType);
 
     /**
      * Publish a single {@link Outbox}

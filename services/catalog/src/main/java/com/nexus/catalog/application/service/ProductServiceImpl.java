@@ -91,6 +91,7 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
 
         List<Product> savedProducts = productRepository.saveAll(products);
+        outboxService.productEvent(savedProducts, ProductEventType.PRODUCT_CREATED);
         log.info("Created {} products", savedProducts.size());
         return new GenericBatchOperationResponse(BatchOperationType.INSERT, savedProducts.size(), BATCH_PRODUCT_INSERT_SUCCESS);
 
