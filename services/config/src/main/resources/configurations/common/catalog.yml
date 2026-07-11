@@ -4,12 +4,12 @@ nexus:
       publish: publishProduct-out-0
 outbox:
   cron: "0/5 * * * * *"
-  batch-size: 30
+  batch-size: 100000
   max-retries: 5
   archive:
     cron: "0 0 2 * * *"
     threshold-days: 30
-    batch-size: 500
+    batch-size: 1000
 server:
   port: 8081
 spring:
