@@ -86,8 +86,16 @@ public class ProductServiceImpl implements ProductService {
             throw new EntryNotFoundException(Category.class.getSimpleName(), missing.toString());
         }
 
+        Map<Long, Brand> brandById = brands.stream().collect(Collectors.toMap(Brand::getId, Function.identity()));
+        Map<Long, Category> categoryById = categories.stream().collect(Collectors.toMap(Category::getId, Function.identity()));
+
         List<Product> products = productRequest.stream()
-                .map(productMapper::toModel)
+                .map(request -> {
+                    Product product = productMapper.toModel(request);
+                    product.setBrand(brandById.get(request.brandId()));
+                    product.setCategory(categoryById.get(request.categoryId()));
+                    return product;
+                })
                 .toList();
 
         List<Product> savedProducts = productRepository.saveAll(products);
