@@ -21,13 +21,14 @@ import org.springframework.ai.rag.generation.augmentation.QueryAugmenter;
 import org.springframework.ai.rag.preretrieval.query.transformation.QueryTransformer;
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
 import org.springframework.ai.rag.retrieval.search.DocumentRetriever;
-import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -46,7 +47,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
             ProductStockViewMapper productStockViewMapper,
             PromptSanitizer promptSanitizer,
             @Value("classpath:/prompts/rag-instructions.st") Resource ragInstructions,
-            @Value("classpath:/prompts/rag-query-transformer-instructions.st") Resource queryTransformerInstructions
+            @Value("classpath:/prompts/rag-query-transformer-instructions.st") Resource queryTransformerInstructions,
+            @Value("classpath:/prompts/qwen3-query-instruction.st") Resource qwen3QueryInstruction
     ) {
 
         this.productStockViewRepository = productStockViewRepository;
@@ -55,11 +57,15 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         this.vectorStore = vectorStore;
 
         // VectorStore similarity search configuration
-        DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
-                .vectorStore(vectorStore)
-                .similarityThreshold(0.5)
-                .topK(5)
-                .build();
+        DocumentRetriever retriever = query -> {
+            String instructedText = new PromptTemplate(qwen3QueryInstruction).render(Map.of("query", query.text()));
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .query(instructedText)
+                    .similarityThreshold(0.4)
+                    .topK(5)
+                    .build();
+            return vectorStore.similaritySearch(searchRequest);
+        };
 
         // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)
         QueryTransformer rewriteTransformer = RewriteQueryTransformer.builder()
@@ -138,7 +144,12 @@ public class ProductSearchServiceImpl implements ProductSearchService {
             log.info("[SEARCH PIPELINE] Found {} matching vectors", retrievedDocuments.size());
 
             List<Long> productIds = retrievedDocuments.stream()
-                    .map(doc -> Long.valueOf(doc.getMetadata().get("productId").toString()))
+                    .map(doc -> {
+                        if (doc.getScore() != null) {
+                            log.info(doc.getScore().toString());
+                        }
+                        return Long.valueOf(doc.getMetadata().get("productId").toString());
+                    })
                     .distinct()
                     .toList();
 
