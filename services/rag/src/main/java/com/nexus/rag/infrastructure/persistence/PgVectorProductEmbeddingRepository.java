@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+import static com.nexus.rag.infrastructure.persistence.constant.RepositoryConstants.PGVECTOR_PRODUCT_EMBEDDING_REPOSITORY;
+
+@Repository(PGVECTOR_PRODUCT_EMBEDDING_REPOSITORY)
 @RequiredArgsConstructor
 public class PgVectorProductEmbeddingRepository implements ProductEmbeddingRepository {
 
