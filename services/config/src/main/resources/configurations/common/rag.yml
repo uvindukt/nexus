@@ -32,16 +32,14 @@ spring:
         chat:
           options:
             model: gemini-3.1-flash-lite
-        embedding:
-          text:
-            options:
-              model: gemini-embedding-2
     vectorstore:
-      pgvector:
-        index-type: HNSW
-        distance-type: COSINE_DISTANCE
-        dimensions: 768
-        initialize-schema: false
+      qdrant:
+        collection-name: nexus-products
+        initialize-schema: true
+    ollama:
+      embedding:
+        options:
+          model: qwen3-embedding:8b
     chat:
       memory:
         repository:

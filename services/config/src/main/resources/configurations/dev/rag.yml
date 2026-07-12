@@ -76,15 +76,17 @@ logging:
     google:
       genai:
         api-key: ${GOOGLE_AI_API_KEY}
-        embedding:
-          api-key: ${GOOGLE_AI_API_KEY}
-          text:
-            options:
-              model: gemini-embedding-2
-              dimensions: 768
     vectorstore:
-      pgvector:
-        initialize-schema: false  # Liquibase owns the schema
+      qdrant:
+        host: localhost
+        port: 6334
+        collection-name: nexus-products
+        initialize-schema: true
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        options:
+          model: qwen3-embedding:8b
 eureka:
   client:
     register-with-eureka: true
