@@ -10,6 +10,7 @@ import com.nexus.rag.domain.service.PromptSanitizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
@@ -36,6 +37,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     private final ProductStockViewRepository productStockViewRepository;
     private final ProductStockViewMapper productStockViewMapper;
     private final PromptSanitizer promptSanitizer;
+    private final VectorStore vectorStore;
 
     public ProductSearchServiceImpl(
             ChatClient.Builder chatClientBuilder,
@@ -50,11 +52,12 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         this.productStockViewRepository = productStockViewRepository;
         this.productStockViewMapper = productStockViewMapper;
         this.promptSanitizer = promptSanitizer;
+        this.vectorStore = vectorStore;
 
         // VectorStore similarity search configuration
         DocumentRetriever retriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
-                .similarityThreshold(0.65)
+                .similarityThreshold(0.5)
                 .topK(5)
                 .build();
 
@@ -106,6 +109,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
         try {
 
+            log.info("[SEARCH PIPELINE] VectorStore implementation in use: {}", vectorStore.getClass().getSimpleName());
             log.info("[SEARCH PIPELINE] User query: \"{}\"", userQuery);
 
             String sanitizedQuery = promptSanitizer.sanitizeQuery(userQuery);
@@ -122,6 +126,8 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 answer = "No Answer";
             }
 
+            Usage usage = chatResponse.getMetadata().getUsage();
+            log.info("[SEARCH PIPELINE] promptTokens={}, completionTokens={}, totalTokens={}", usage.getPromptTokens(), usage.getCompletionTokens(), usage.getTotalTokens());
             log.info("[SEARCH PIPELINE] Received LLM answer - \"{}\"", answer);
 
             List<Document> retrievedDocuments = chatResponse.getMetadata().get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT);
