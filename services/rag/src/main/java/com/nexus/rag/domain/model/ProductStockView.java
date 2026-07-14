@@ -1,8 +1,6 @@
 package com.nexus.rag.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -22,6 +20,10 @@ public class ProductStockView {
     private String productName;
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EmbeddingStatus embeddingStatus = EmbeddingStatus.PENDING;
     private String slug;
     private String sku;
     private BigDecimal price;

@@ -1,6 +1,8 @@
 package com.nexus.rag.domain.repository;
 
+import com.nexus.rag.domain.model.EmbeddingStatus;
 import com.nexus.rag.domain.model.ProductStockView;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -10,5 +12,7 @@ import java.util.List;
 public interface ProductStockViewRepository extends ListCrudRepository<ProductStockView, Long> {
 
     List<ProductStockView> findByProductIdIn(List<Long> productIds);
+
+    List<ProductStockView> findByEmbeddingStatus(EmbeddingStatus embeddingStatus, Pageable pageable);
 
 }
