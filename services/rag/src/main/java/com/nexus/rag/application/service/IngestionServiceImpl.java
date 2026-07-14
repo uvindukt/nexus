@@ -12,6 +12,7 @@ import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ class IngestionServiceImpl implements IngestionService {
         this.productEmbeddingRepository = productEmbeddingRepository;
     }
 
+    @Transactional // For polymorphic ProductEmbeddingRepository/VectorStore support PgVector and Qdrant
     @Override
     public void upsertEmbedding(ProductStockView view) {
 
