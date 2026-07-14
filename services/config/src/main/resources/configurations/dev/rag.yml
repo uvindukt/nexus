@@ -6,6 +6,13 @@ spring:
 logging:
   level:
     root: INFO
+    org.hibernate.orm.jdbc.batch: TRACE
+  file:
+    name: logs/rag.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 5
   jpa:
     hibernate:
       ddl-auto: validate
