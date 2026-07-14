@@ -3,7 +3,7 @@ package com.nexus.inventory.infrastructure.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "prefix.archive")
+@ConfigurationProperties(prefix = "outbox.archive")
 @Data
 public class OutboxArchiveProperties {
     String cron;
