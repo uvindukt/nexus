@@ -45,6 +45,10 @@ spring:
         repository:
           redis:
             key-prefix: "nexus:rag:memory:"
+ingestion:
+  cron: "0/5 * * * * *"
+  batch-size: 100
+  max-retries: 5
 management:
   endpoints:
     web:
