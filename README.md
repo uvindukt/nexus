@@ -24,7 +24,7 @@ Nexus is an e-commerce platform accelerator built as an event driven Spring Boot
   └────────────┘   └────────────┘
 ```
 
-Cross-cutting infrastructure: PostgreSQL (with pgvector), Kafka + Debezium (CDC), Redis, Keycloak (OAuth2/OIDC).
+Cross-cutting infrastructure: PostgreSQL (with pgvector), Qdrant (vector store), Kafka + Debezium (CDC), Redis, Keycloak (OAuth2/OIDC), Ollama (local embedding inference).
 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=spring&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
@@ -32,7 +32,9 @@ Cross-cutting infrastructure: PostgreSQL (with pgvector), Kafka + Debezium (CDC)
 ![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=flat-square&logo=apachekafka&logoColor=white)
 ![Debezium](https://img.shields.io/badge/Debezium-FF6A00?style=flat-square&logo=debezium&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?style=flat-square&logo=qdrant&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-000000?style=flat-square&logo=ollama&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75EC?style=flat-square&logo=googlegemini&logoColor=white)
 ![Keycloak](https://img.shields.io/badge/Keycloak-2563EB?style=flat-square&logo=keycloak&logoColor=white)
 ![Spring AI](https://img.shields.io/badge/Spring_AI-6DB33F?style=flat-square&logo=spring&logoColor=white)
@@ -56,8 +58,8 @@ Cross-cutting infrastructure: PostgreSQL (with pgvector), Kafka + Debezium (CDC)
 ## Tech Stack
 
 - **Framework:** Spring Boot 4, Spring Cloud (Config, Eureka, Gateway, Stream/Kafka)
-- **AI/RAG:** Spring AI 2.0, Google Gemini (chat) + `gemini-embedding-2` (768-dim embeddings), pgvector with HNSW index (cosine distance)
-- **Persistence:** PostgreSQL (`pgvector/pgvector:pg16`), Liquibase migrations, Spring Data JPA
+- **AI/RAG:** Spring AI 2.0, Google Gemini (chat), Qwen3-Embedding-8B (4096-dim embeddings) served locally via Ollama. Vector storage is polymorphic across two backends behind a common port/repository abstraction: **Qdrant** (gRPC, port 6334 — used for the current 4096-dim embedding model) and **pgvector** (HNSW index, cosine distance — retained for lower-dimensional embedding configurations)
+- **Persistence:** PostgreSQL (`pgvector/pgvector:pg16`), Qdrant, Liquibase migrations, Spring Data JPA
 - **Messaging:** Apache Kafka, Debezium CDC (logical replication via `pgoutput`)
 - **Caching / Memory:** Redis (product cache in `catalog`, SSE pub/sub in `analytics`, chat conversation memory in `rag`)
 - **Auth:** Keycloak (OAuth2 resource server / JWT)
@@ -79,12 +81,21 @@ Downstream services (`inventory`, `analytics`, `rag`) consume these events throu
 
 ## RAG Search Pipeline
 
-1. **Ingestion:** Kafka product/stock event → `product_stock_view` upsert → build `Document` (brand + category + description) → embed → upsert into `vector_store`.
+1. **Ingestion:** Kafka product/stock event → `product_stock_view` upsert → build `Document` (brand + category + description) → embed via Qwen3-Embedding-8B (Ollama) → upsert into the configured vector store (Qdrant by default, pgvector as an alternate backend).
 2. **Query:** user message → query rewriting → vector similarity retrieval (top-K, cosine threshold) → context injection into a prompt template → Gemini chat completion → response, with conversation history persisted in Redis.
+
+### Vector Store Abstraction
+
+The vector store is accessed through a port defined in `domain.repository`, with two interchangeable adapters in `infrastructure.persistence`:
+
+- **Qdrant adapter** — uses `QdrantClient` / `scrollAsync` with payload filtering; a `productId` payload index (type Keyword) is created via an `ApplicationRunner` with an idempotency check.
+- **PgVector adapter** — uses Spring AI's `PgVectorStore` with an HNSW cosine index; suitable for embedding models under pgvector's dimension ceiling.
+
+The active backend is selected via configuration rather than code changes, keeping ingestion and query logic backend-agnostic.
 
 ## Getting Started
 
-Local infrastructure (Postgres, Kafka, Debezium Connect, Keycloak, Redis) is defined in `compose.yml`. Each service reads shared configuration from the `config` server, which must be running before the others start; `discovery` should also be up so services can register with Eureka. Per-service datasource credentials, Kafka bindings, and other settings live under `services/config/src/main/resources/configurations/{common,dev,prod}`.
+Local infrastructure (Postgres, Qdrant, Kafka, Debezium Connect, Keycloak, Redis, Ollama) is defined in `compose.yml`. Each service reads shared configuration from the `config` server, which must be running before the others start; `discovery` should also be up so services can register with Eureka. Per-service datasource credentials, Kafka bindings, and other settings live under `services/config/src/main/resources/configurations/{common,dev,prod}`.
 
 ## Project Structure
 
