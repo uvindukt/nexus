@@ -35,6 +35,7 @@ CREATE TABLE product_stock_view
     product_id         BIGINT NOT NULL,
     product_name       VARCHAR(255),
     description        TEXT,
+    embedding_status   VARCHAR(255) DEFAULT 'PENDING' NOTNULL,
     slug               VARCHAR(255),
     sku                VARCHAR(255),
     price              DECIMAL,
