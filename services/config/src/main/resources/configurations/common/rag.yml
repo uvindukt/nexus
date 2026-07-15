@@ -47,6 +47,7 @@ spring:
             key-prefix: "nexus:rag:memory:"
 ingestion:
   cron: "0/5 * * * * *"
+  recovery-cron: "0 */3 * * * *"
   batch-size: 100
   max-retries: 5
 management:
