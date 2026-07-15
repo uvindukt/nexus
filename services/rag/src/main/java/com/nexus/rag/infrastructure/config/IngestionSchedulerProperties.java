@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class IngestionSchedulerProperties {
     String cron;
+    String recoveryCron;
     Integer batchSize;
     Integer maxRetries;
 }
