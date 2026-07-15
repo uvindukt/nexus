@@ -26,6 +26,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductStockViewServiceImpl implements ProductStockViewService {
 
+    private static final String PRODUCT_NOT_FOUND = "Product not found";
+
     private final ProductStockViewRepository productStockViewRepository;
     private final ObjectMapper objectMapper;
 
@@ -95,11 +97,11 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public void updateEmbeddingStatus(Long productId, EmbeddingStatus embeddingStatus) throws RagServiceException {
+    public void updateEmbeddingStatus(Long productId, EmbeddingStatus embeddingStatus) throws IngestionPipelineException {
 
         ProductStockView productStockView = productStockViewRepository
                 .findById(productId)
-                .orElseThrow(() -> new IngestionPipelineException("Product not found"));
+                .orElseThrow(() -> new IngestionPipelineException(PRODUCT_NOT_FOUND));
         productStockView.setEmbeddingStatus(embeddingStatus);
         productStockViewRepository.save(productStockView);
 
@@ -107,12 +109,24 @@ public class ProductStockViewServiceImpl implements ProductStockViewService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public void markEmbeddingOpFailed(Long productId) throws RagServiceException {
+    public void markEmbeddingOpFailed(Long productId) throws IngestionPipelineException {
 
         ProductStockView productStockView = productStockViewRepository
                 .findById(productId)
-                .orElseThrow(() -> new IngestionPipelineException("Product not found"));
+                .orElseThrow(() -> new IngestionPipelineException(PRODUCT_NOT_FOUND));
         productStockView.setEmbeddingStatus(EmbeddingStatus.FAILED);
+        productStockViewRepository.save(productStockView);
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    public void markEmbeddingOpDead(Long productId) throws IngestionPipelineException {
+
+        ProductStockView productStockView = productStockViewRepository
+                .findById(productId)
+                .orElseThrow(() -> new IngestionPipelineException(PRODUCT_NOT_FOUND));
+        productStockView.setEmbeddingStatus(EmbeddingStatus.DEAD);
         productStockViewRepository.save(productStockView);
 
     }
