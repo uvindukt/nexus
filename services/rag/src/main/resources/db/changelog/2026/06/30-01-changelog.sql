@@ -50,7 +50,6 @@ CREATE TABLE product_stock_view
 );
 
 -- changeset Uvindu:1782817440726-4 runInTransaction:false
-
 CREATE INDEX CONCURRENTLY idx_product_pending_embedding
     ON product_stock_view (product_id)
     WHERE embedding_status = 'PENDING'
