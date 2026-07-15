@@ -41,4 +41,8 @@ public class ProductStockView {
     @LastModifiedDate
     private Instant lastUpdated;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer retries = 0;
+
 }
