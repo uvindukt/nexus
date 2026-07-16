@@ -144,18 +144,29 @@ public class ProductSearchServiceImpl implements ProductSearchService {
 
     }
 
+    /**
+     *
+     * @param query
+     * @return
+     */
     List<Document> retrieveDocuments(Query query) {
 
         String instructedText = qwen3QueryInstructionTemplate.render(Map.of("query", query.text()));
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(instructedText)
-                .similarityThreshold(0.4)
-                .topK(5)
+                .similarityThreshold(0.45)
+                .topK(20)
                 .build();
         return vectorStore.similaritySearch(searchRequest);
 
     }
 
+    /**
+     *
+     * @param query
+     * @param rewriteTransformer
+     * @return
+     */
     Query queryTransformerWithLogging(Query query, QueryTransformer rewriteTransformer) {
 
         try {
