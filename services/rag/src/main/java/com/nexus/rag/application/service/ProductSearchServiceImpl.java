@@ -39,6 +39,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     private final ProductStockViewMapper productStockViewMapper;
     private final PromptSanitizer promptSanitizer;
     private final VectorStore vectorStore;
+    private final PromptTemplate qwen3QueryInstructionTemplate;
 
     public ProductSearchServiceImpl(
             ChatClient.Builder chatClientBuilder,
@@ -55,17 +56,10 @@ public class ProductSearchServiceImpl implements ProductSearchService {
         this.productStockViewMapper = productStockViewMapper;
         this.promptSanitizer = promptSanitizer;
         this.vectorStore = vectorStore;
+        this.qwen3QueryInstructionTemplate = new PromptTemplate(qwen3QueryInstruction);
 
         // VectorStore similarity search configuration
-        DocumentRetriever retriever = query -> {
-            String instructedText = new PromptTemplate(qwen3QueryInstruction).render(Map.of("query", query.text()));
-            SearchRequest searchRequest = SearchRequest.builder()
-                    .query(instructedText)
-                    .similarityThreshold(0.4)
-                    .topK(5)
-                    .build();
-            return vectorStore.similaritySearch(searchRequest);
-        };
+        DocumentRetriever retriever = this::retrieveDocuments;
 
         // Configuration for QueryTransformer (LLM call to rewrite/optimize the user query)
         QueryTransformer rewriteTransformer = RewriteQueryTransformer.builder()
@@ -75,24 +69,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
                 .build();
 
         // Logging wrapper for QueryTransformer (Decorator)
-        QueryTransformer rewriteTransformerWithLogging = query -> {
-
-            try {
-
-                // Execute the first LLM call to rewrite the query
-                Query transformedQuery = rewriteTransformer.transform(query);
-
-                // Log the semantic conversion (.text() retrieves the modified string)
-                log.info("[SEARCH PIPELINE] Raw Input: \"{}\" -> Semantically Rewritten: \"{}\"", query.text(), transformedQuery.text());
-
-                return transformedQuery;
-
-            } catch (Exception e) {
-                log.error("[SEARCH PIPELINE] Failed to rewrite query: \"{}\"", query.text(), e);
-                throw e;
-            }
-
-        };
+        QueryTransformer rewriteTransformerWithLogging = query -> this.queryTransformerWithLogging(query, rewriteTransformer);
 
         // allowEmptyContext defaults to false: on no match, the model is instructed not to answer rather than the call being skipped
         QueryAugmenter queryAugmenter = ContextualQueryAugmenter.builder()
@@ -157,13 +134,39 @@ public class ProductSearchServiceImpl implements ProductSearchService {
             log.info("[SEARCH PIPELINE] Found {} products in database", products.size());
 
             List<ProductStockViewResponse> productDtoList = productStockViewMapper.toResponse(products);
-
             return new ProductSearchResponse(answer, productDtoList);
 
         } catch (SearchPipelineException e) {
             throw e;
         } catch (RuntimeException e) {
             throw new SearchPipelineException(e, "Unknown failure");
+        }
+
+    }
+
+    List<Document> retrieveDocuments(Query query) {
+
+        String instructedText = qwen3QueryInstructionTemplate.render(Map.of("query", query.text()));
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query(instructedText)
+                .similarityThreshold(0.4)
+                .topK(5)
+                .build();
+        return vectorStore.similaritySearch(searchRequest);
+
+    }
+
+    Query queryTransformerWithLogging(Query query, QueryTransformer rewriteTransformer) {
+
+        try {
+            // Execute the first LLM call to rewrite the query
+            Query transformedQuery = rewriteTransformer.transform(query);
+            // Log the semantic conversion (.text() retrieves the modified string)
+            log.info("[SEARCH PIPELINE] Raw Input: \"{}\" -> Semantically Rewritten: \"{}\"", query.text(), transformedQuery.text());
+            return transformedQuery;
+        } catch (Exception e) {
+            log.error("[SEARCH PIPELINE] Failed to rewrite query: \"{}\"", query.text(), e);
+            throw e;
         }
 
     }
