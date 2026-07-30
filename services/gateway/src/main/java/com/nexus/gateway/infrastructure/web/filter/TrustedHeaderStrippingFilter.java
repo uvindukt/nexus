@@ -1,5 +1,6 @@
 package com.nexus.gateway.infrastructure.web.filter;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -19,6 +20,7 @@ public class TrustedHeaderStrippingFilter implements GlobalFilter, Ordered {
             "X-User-Id", "X-User-Role", "X-User-Roles", "X-Auth-User"
     );
 
+    @NullMarked
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest.Builder mutated = exchange.getRequest().mutate();
