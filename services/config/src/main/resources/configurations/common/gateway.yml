@@ -41,7 +41,7 @@ spring:
             - DedupeResponseHeader=Access-Control-Allow-Origin
           routes:
             - id: catalog-service
-              uri: lb://catalog-service
+              uri: lb://catalog
               predicates:
                 - Path=/catalog/v1/**
               filters:
@@ -62,7 +62,7 @@ spring:
                 - *retry-filter
 
             - id: inventory-service
-              uri: lb://inventory-service
+              uri: lb://inventory
               predicates:
                 - Path=/inventory/v1/**
               filters:
@@ -81,8 +81,8 @@ spring:
                     key-resolver: "#{@userKeyResolver}"
                 - *retry-filter
 
-            - id: nexus-rag
-              uri: lb://nexus-rag
+            - id: rag-service
+              uri: lb://rag
               predicates:
                 - Path=/rag/v1/**
               filters:
@@ -103,7 +103,7 @@ spring:
                 - *retry-filter
 
             - id: analytics-service
-              uri: lb://analytics-service
+              uri: lb://analytics
               predicates:
                 - Path=/analytics/v1/**
               metadata:
