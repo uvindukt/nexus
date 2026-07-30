@@ -1,3 +1,6 @@
+server:
+  port: 8089
+
 # Reusable filter definitions (plain YAML anchors — parsed before Spring binds properties,
 # so this works with any YAML-backed config, not a Spring-specific feature).
 x-retry-filter: &retry-filter
@@ -159,3 +162,15 @@ management:
   health:
     circuitbreakers:
       enabled: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-admin:discovery-secure-password@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
