@@ -17,97 +17,114 @@ x-retry-filter: &retry-filter
 spring:
   cloud:
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:3000"
-              - "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-            maxAge: 3600
-      httpclient:
-        connect-timeout: 2000
-        response-timeout: 5s
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin
-      routes:
-        - id: catalog-service
-          uri: lb://catalog-service
-          predicates:
-            - Path=/api/catalog/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: catalogServiceCB
-                fallbackUri: forward:/fallback/catalog
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 20
-                redis-rate-limiter.burstCapacity: 40
-                redis-rate-limiter.requestedTokens: 1
-                key-resolver: "#{@userKeyResolver}"
-            - *retry-filter
-
-        - id: inventory-service
-          uri: lb://inventory-service
-          predicates:
-            - Path=/api/inventory/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: inventoryServiceCB
-                fallbackUri: forward:/fallback/inventory
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 20
-                redis-rate-limiter.burstCapacity: 40
-                key-resolver: "#{@userKeyResolver}"
-            - *retry-filter
-
-        - id: nexus-rag
-          uri: lb://nexus-rag
-          predicates:
-            - Path=/api/rag/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: ragServiceCB
-                fallbackUri: forward:/fallback/rag
-            # RAG calls hit an LLM — tighter, separate bucket so it can't starve other routes
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 5
-                redis-rate-limiter.burstCapacity: 10
-                key-resolver: "#{@userKeyResolver}"
-            - *retry-filter
-
-        - id: analytics-service
-          uri: lb://analytics-service
-          predicates:
-            - Path=/api/analytics/**
-          metadata:
-            # SSE connections stay open indefinitely — the global 5s response-timeout
-            # would kill the stream almost immediately, so this route overrides it.
-            # Verify against your Spring Cloud Gateway version that this is honored;
-            # if not, the fallback is a very large explicit value rather than -1.
-            response-timeout: -1
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:3000"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders:
+                  - "*"
+                allowCredentials: true
+                maxAge: 3600
+          httpclient:
             connect-timeout: 2000
-          filters:
-            - name: RequestRateLimiter
-              args:
-                # Gates new connection attempts, not in-stream traffic — SSE connections
-                # are long-lived, so this bounds how many clients can start streaming per window.
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
-                key-resolver: "#{@userKeyResolver}"
+            response-timeout: 5s
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin
+          routes:
+            - id: catalog-service
+              uri: lb://catalog-service
+              predicates:
+                - Path=/catalog/v1/**
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /catalog/(?<segment>.*)
+                    replacement: /$\{segment}
+                - name: CircuitBreaker
+                  args:
+                    name: catalogServiceCB
+                    fallbackUri: forward:/fallback/catalog
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20
+                    redis-rate-limiter.burstCapacity: 40
+                    redis-rate-limiter.requestedTokens: 1
+                    key-resolver: "#{@userKeyResolver}"
+                - *retry-filter
+
+            - id: inventory-service
+              uri: lb://inventory-service
+              predicates:
+                - Path=/inventory/v1/**
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /inventory/(?<segment>.*)
+                    replacement: /$\{segment}
+                - name: CircuitBreaker
+                  args:
+                    name: inventoryServiceCB
+                    fallbackUri: forward:/fallback/inventory
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20
+                    redis-rate-limiter.burstCapacity: 40
+                    key-resolver: "#{@userKeyResolver}"
+                - *retry-filter
+
+            - id: nexus-rag
+              uri: lb://nexus-rag
+              predicates:
+                - Path=/rag/v1/**
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /rag/(?<segment>.*)
+                    replacement: /$\{segment}
+                - name: CircuitBreaker
+                  args:
+                    name: ragServiceCB
+                    fallbackUri: forward:/fallback/rag
+                # RAG calls hit an LLM — tighter, separate bucket so it can't starve other routes
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 5
+                    redis-rate-limiter.burstCapacity: 10
+                    key-resolver: "#{@userKeyResolver}"
+                - *retry-filter
+
+            - id: analytics-service
+              uri: lb://analytics-service
+              predicates:
+                - Path=/analytics/v1/**
+              metadata:
+                # SSE connections stay open indefinitely — the global 5s response-timeout
+                # would kill the stream almost immediately, so this route overrides it.
+                # Verify against your Spring Cloud Gateway version that this is honored;
+                # if not, the fallback is a very large explicit value rather than -1.
+                response-timeout: -1
+                connect-timeout: 2000
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /analytics/(?<segment>.*)
+                    replacement: /$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    # Gates new connection attempts, not in-stream traffic — SSE connections
+                    # are long-lived, so this bounds how many clients can start streaming per window.
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    key-resolver: "#{@userKeyResolver}"
 
   redis:
     host: ${REDIS_HOST:localhost}
@@ -157,6 +174,8 @@ management:
       exposure:
         include: health, gateway, circuitbreakers, circuitbreakerevents
   endpoint:
+    gateway:
+      enabled: true
     health:
       show-details: always
   health:
@@ -174,3 +193,7 @@ eureka:
     instance-id: ${spring.application.name}:${random.value}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
