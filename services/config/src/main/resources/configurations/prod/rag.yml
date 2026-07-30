@@ -68,7 +68,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://your-auth-server/realms/nexus
+          issuer-uri: http://localhost:8080/realms/nexus
   ai:
     google:
       genai:
