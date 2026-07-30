@@ -34,6 +34,9 @@ import java.util.Map;
 @Service
 public class ProductSearchServiceImpl implements ProductSearchService {
 
+    private static final double SIMILARITY_THRESHOLD = 0.5;
+    private static final int TOP_K = 20;
+
     private final ChatClient chatClient;
     private final ProductStockViewRepository productStockViewRepository;
     private final ProductStockViewMapper productStockViewMapper;
@@ -145,27 +148,31 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     }
 
     /**
+     * Retrieves relevant documents from the vector store by formatting the query using the
+     * Qwen3 instruction template and executing a similarity search.
      *
-     * @param query
-     * @return
+     * @param query the search query containing text to match against vector embeddings
+     * @return a list of {@link Document} objects returned by the vector store matching the similarity threshold
      */
     List<Document> retrieveDocuments(Query query) {
 
         String instructedText = qwen3QueryInstructionTemplate.render(Map.of("query", query.text()));
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(instructedText)
-                .similarityThreshold(0.45)
-                .topK(20)
+                .similarityThreshold(SIMILARITY_THRESHOLD)
+                .topK(TOP_K)
                 .build();
         return vectorStore.similaritySearch(searchRequest);
 
     }
 
     /**
+     * Transforms an incoming query using the provided {@link QueryTransformer} and logs the
+     * raw input along with the semantically rewritten output for pipeline diagnostic purposes.
      *
-     * @param query
-     * @param rewriteTransformer
-     * @return
+     * @param query              the original query to be transformed
+     * @param rewriteTransformer the transformer implementation used to perform query rewriting
+     * @return the semantically transformed {@link Query}
      */
     Query queryTransformerWithLogging(Query query, QueryTransformer rewriteTransformer) {
 
